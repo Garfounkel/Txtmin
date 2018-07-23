@@ -1,6 +1,6 @@
 #include "patricia_trie.hh"
 
 int main() {
-  PatriciaTrie trie;
+  PatriciaTrie trie("toto.txt");
   return 0;
 }
