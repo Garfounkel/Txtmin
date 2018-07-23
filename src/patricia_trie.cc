@@ -1,7 +1,7 @@
 #include "patricia_trie.hh"
 
-PatriciaTrie::PatriciaTrie(std::ifstream& file)
- : root_(this)
+PatriciaTrie::PatriciaTrie(std::istream& file)
+  : root_(std::make_shared<node_t>(this))
 {
   while (file.good())
   {
@@ -15,8 +15,13 @@ PatriciaTrie::PatriciaTrie(std::ifstream& file)
 
 void PatriciaTrie::insert(const string_t& word, const unsigned freq)
 {
+  // TODO: remove this
+  (void)freq;
+
+
+
   auto it = std::begin(word);
-  auto& current_node = root_;
+  auto current_node = root_;
 
   while (it != std::end(word))
   {
@@ -26,7 +31,7 @@ void PatriciaTrie::insert(const string_t& word, const unsigned freq)
     }
     else
     { // Not found
-      current_node->create_edge(it, std::end(word), char_table_);
+      current_node->create_edge(it, std::end(word));
       break;
     }
   }
@@ -34,10 +39,10 @@ void PatriciaTrie::insert(const string_t& word, const unsigned freq)
 
 bool PatriciaTrie::Cursor::next(char_t c)
 {
-  if (std::holds_alternative<Node&>(current_))
+  if (std::holds_alternative<Node*>(current_))
   { // Node
-    auto& cur = std::get<Node&>(current_);
-    auto opt = cur.get_edge(c);
+    auto cur = std::get<Node*>(current_);
+    auto opt = cur->get_edge(c);
     if (!opt)
       return false;
     current_ = *opt;
@@ -45,19 +50,29 @@ bool PatriciaTrie::Cursor::next(char_t c)
   }
   else
   { // Edge
-    auto& cur = std::get<Edge&>(current_);
-    // if ()
-    cur->get_char_at(index_);
+    auto cur = std::get<Edge*>(current_);
+    if (cur->get_char_at(index_) != c)
+    {
+      return false;
+    }
+    if (index_ == cur->length_get())
+    {
+      index_ = 0;
+      current_ = cur->next_get().get();
+    }
+    else
+    {
+      index_++;
+    }
   }
   return true;
 }
 
-void PatriciaTrie::Node::create_edge(string_t::iterator start,
-                                     string_t::iterator end,
-                                     string_t& char_table)
+void PatriciaTrie::Node::create_edge(string_t::const_iterator start,
+                                     string_t::const_iterator end)
 {
-  auto offset = char_table.length();
-  char_table.append(start + 1, end);
+  auto offset = trie_get()->char_table_.length();
+  trie_get()->char_table_.append(start + 1, end);
   children_.emplace_back(trie_get(), *start, offset, end - start);
 }
 
@@ -73,15 +88,15 @@ PatriciaTrie::char_t PatriciaTrie::Edge::get_char_at(index_t index)
 
   assert(index <= length_);
 
-  return trie_get().char_table_[offset_ + index - 1];
+  return trie_get()->char_table_[offset_ + index - 1];
 }
 
-std::optional<Edge&> PatriciaTrie::Node::get_edge(char_t c)
+std::optional<PatriciaTrie::Edge*> PatriciaTrie::Node::get_edge(char_t c)
 {
   for (Edge& child : children_)
   {
     if (child.get_char_at(0) == c)
-      return std::make_optional(child);
+      return std::make_optional(&child);
   }
 
   return std::nullopt;

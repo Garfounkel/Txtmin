@@ -1,4 +1,6 @@
 ### Project Related ###
+_build/
+build/
 ref/
 
 ### C++ ###

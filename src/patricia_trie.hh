@@ -5,12 +5,18 @@
 #include <istream>
 #include <string>
 #include <optional>
+#include <variant>
+#include <cassert>
 
 class PatriciaTrie {
+  class Node;
+
   using char_t = char;
   using string_t = std::basic_string<char_t>;
   using index_t = unsigned;
   using offset_t = std::size_t;
+  using node_t = Node;
+  using node_ptr_t = std::shared_ptr<node_t>;
 
 public:
   PatriciaTrie(std::istream& file);
@@ -28,9 +34,7 @@ private:
 
   private:
     PatriciaTrie* trie_;
-  }
-
-  class Node;
+  };
 
   class Edge: public TrieComponent {
   public:
@@ -39,13 +43,14 @@ private:
     {}
 
     char_t get_char_at(index_t index);
-    index_t get_length() { return length_; }
+    index_t length_get() { return length_; }
+    node_ptr_t next_get() { return next_; }
 
   private:
     char_t first_char_;
-    offse t_t offset_;
+    offset_t offset_;
     index_t length_;
-    std::unique_ptr<Node> next_;
+    node_ptr_t next_;
   };
 
   class Node: public TrieComponent {
@@ -55,10 +60,9 @@ private:
     {}
 
     bool is_word();
-    std::optional<Edge&> get_edge(char_t c);
-    void create_edge(string_t::iterator start,
-                     string_t::iterator end,
-                     string_t& char_table);
+    std::optional<Edge*> get_edge(char_t c);
+    void create_edge(string_t::const_iterator start,
+                     string_t::const_iterator end);
 
   private:
       unsigned freq_;
@@ -67,17 +71,17 @@ private:
 
   class Cursor: public TrieComponent {
   public:
-    Cursor(Node& start)
-      : TrieComponent(start.trie_get()), current_(start), index_(0)
+    Cursor(Node* start)
+      : TrieComponent(start->trie_get()), current_(start), index_(0)
     {}
 
     bool next(char_t c);
 
   private:
-    std::variant<Node&, Edge&> current_;
+    std::variant<Node*, Edge*> current_;
     index_t index_;
   };
 
-  Node root_;
+  node_ptr_t root_;
   string_t char_table_;
 };

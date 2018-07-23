@@ -1,6 +1,8 @@
 cmake_minimum_required (VERSION 2.6)
 project (TMLN)
 
+set(CMAKE_CXX_FLAGS "-Wall -Wextra -pedantic -std=c++17")
+
 set(SRC
   src/patricia_trie.cc
 )
