@@ -30,7 +30,7 @@ private:
      : trie_(trie)
     {}
 
-    PatriciaTrie* trie_get() { return trie_; }
+    PatriciaTrie* trie_get() const { return trie_; }
 
   private:
     PatriciaTrie* trie_;
@@ -38,13 +38,14 @@ private:
 
   class Edge: public TrieComponent {
   public:
-    Edge(PatriciaTrie* trie, char_t first_char, offset_t offset, index_t length)
-     : TrieComponent(trie), first_char_(first_char), offset_(offset), length_(length)
+    Edge(PatriciaTrie* trie, char_t first_char, offset_t offset, index_t length, node_ptr_t next)
+     : TrieComponent(trie), first_char_(first_char), offset_(offset), length_(length), next_(next)
     {}
 
-    char_t get_char_at(index_t index);
-    index_t length_get() { return length_; }
-    node_ptr_t next_get() { return next_; }
+    char_t get_char_at(index_t index) const;
+    index_t length_get() const { return length_; }
+    node_ptr_t next_get() const { return next_; }
+    void length_set(index_t value) { length_ = value; }
 
   private:
     char_t first_char_;
@@ -59,10 +60,11 @@ private:
      : TrieComponent(trie), freq_(freq)
     {}
 
-    bool is_word();
-    std::optional<Edge*> get_edge(char_t c);
+    bool is_word() const;
+    std::optional<Edge*> get_edge(char_t c) const;
     void create_edge(string_t::const_iterator start,
                      string_t::const_iterator end);
+    void add_freq(unsigned value) { freq_ += value; }
 
   private:
       unsigned freq_;
@@ -76,6 +78,10 @@ private:
     {}
 
     bool next(char_t c);
+    bool is_node() const;
+    index_t index_get() const { return index_; }
+    Node& get_as_node() const { *std::get<Node*>(current_); }
+    Edge& get_as_edge() const { *std::get<Edge*>(current_); }
 
   private:
     std::variant<Node*, Edge*> current_;
