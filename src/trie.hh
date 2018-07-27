@@ -4,6 +4,7 @@
 #include <istream>
 #include <map>
 #include <memory>
+#include <ostream>
 #include <string>
 
 class Trie {
@@ -18,6 +19,8 @@ public:
 
   void insert(const std::string &word, const unsigned freq);
 
+  void write_dot(std::ostream &file);
+
 private:
   class Node {
   public:
@@ -25,6 +28,9 @@ private:
 
     bool is_word() const { return freq_ > 0; }
     void add_freq(unsigned value) { freq_ += value; }
+
+    char_t const &c_get() const { return c_; }
+    unsigned const &freq_get() const { return freq_; }
     std::map<char_t, node_ptr_t> &children_get() { return children_; }
 
   private:
