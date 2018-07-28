@@ -24,20 +24,20 @@ public:
 private:
   class Node {
   public:
-    Node(char_t c = -1, unsigned freq = 0) : c_(c), freq_(freq) {}
+    Node(unsigned freq = 0) : freq_(freq) {}
 
     bool is_word() const { return freq_ > 0; }
     void add_freq(unsigned value) { freq_ += value; }
 
-    char_t const &c_get() const { return c_; }
     unsigned const &freq_get() const { return freq_; }
     std::map<char_t, node_ptr_t> &children_get() { return children_; }
 
   private:
-    char_t c_;
     unsigned freq_;
     std::map<char_t, node_ptr_t> children_;
+    // Node's char is stored in it's parent's children map
   };
 
   node_ptr_t root_;
+  unsigned nb_node_ = 0;
 };

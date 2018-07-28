@@ -15,7 +15,7 @@ int main(int argc, char *argv[]) {
   auto ostream = std::ofstream(argv[2]);
 
   Trie trie(istream);
-  trie.write_dot(ostream);
+  // trie.write_dot(ostream);
 
   return 0;
 }
