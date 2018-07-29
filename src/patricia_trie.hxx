@@ -15,51 +15,54 @@ template <typename ESP> PatriciaTrie<ESP>::PatriciaTrie(std::istream &words) {
 template <typename ESP>
 void PatriciaTrie<ESP>::insert(const string_t &word, freq_t freq) {
   auto current_children = &root_->children_get();
-  node_ptr_t be(nullptr);
 
   for (unsigned c = 0; c < word.length(); c++) {
-    char ch = word[c];
+    char_t ch = word[c];
 
-    if (auto it = current_children->find(ch); it != current_children->end()) {
-      current_children = &it->second->children_get(); // Advance one level
-      auto &wordpart = it->second->leading_edge_get();
-
-      if (wordpart.length() > 0) { // Node has a compressed edge
-        // Advance until prefixes are the same
-        unsigned i = 0;
-        c++;
-        while (c < word.length() and wordpart[i] == word[c]) {
-          i++;
-          ch = word[++c];
-        }
-
-        if (wordpart.length() == i) { // wordpart is a prefix of word[c]
-          if ((it = current_children->find(ch)) != current_children->end()) {
-            current_children = &it->second->children_get(); // Advance one level
-          } else { // Continue with straightforward insertion
-            (*current_children)[ch] = new_node(word.substr(c + 1), freq);
-            break;
-          }
-        } else {
-          auto branch = wordpart.cut(i); // Split current edge at i
-
-          auto &node = it->second;
-          auto orphans = std::move(node->children_get()); // Orphan children :(
-          // Clear map
-          // node->children_move_set(std::map<char_t, node_ptr_t>());
-
-          // Create new intermediate node
-          auto new_node_freq = (c == word.length()) ? 0 : freq;
-          ch = branch.first;
-          node->children_get()[ch] = new_node(branch.second, new_node_freq);
-          // Restore orphans to be new_node's children
-          node->children_get()[ch]->children_move_set(orphans);
-          // No more orphans yeah ! :)
-        }
-      }
-    } else { // Continue with straightforward insertion
+    auto it = current_children->find(ch);
+    if (it == current_children->end()) { // Straightforward insertion
       (*current_children)[ch] = new_node(word.substr(c + 1), freq);
       break;
+    }
+
+    current_children = &it->second->children_get(); // Advance one level
+    auto &wordpart = it->second->leading_edge_get();
+
+    if (wordpart.length() > 0) { // Node has a compressed edge
+      // Advance until prefixes are the same
+      index_t i = 0;
+      c++;
+      while (c < word.length() and wordpart[i] == word[c]) {
+        i++;
+        ch = word[++c];
+      }
+
+      if (wordpart.length() == i) { // wordpart is a prefix of word[c]
+        it = current_children->find(ch);
+        if (it == current_children->end()) { // Straightforward insertion
+          (*current_children)[ch] = new_node(word.substr(c + 1), freq);
+          break;
+        }
+        current_children = &it->second->children_get(); // Advance one level
+      } else {
+        auto branch = wordpart.cut(i); // Split current edge at i
+
+        auto &node = it->second;
+        auto orphans = std::move(node->children_get()); // Orphan children :(
+        // Clear map
+        // node->children_move_set(std::map<char_t, node_ptr_t>());
+
+        // Create new intermediate node
+        ch = branch.first;
+        node->children_get()[ch] = new_node(branch.second, node->freq_get());
+        // Set cutted node to correct freq
+        auto cutted_node_freq = (c == word.length()) ? freq : 0;
+        node->freq_set(cutted_node_freq);
+
+        // Restore orphans to be new_node's children
+        node->children_get()[ch]->children_move_set(orphans);
+        // No more orphans yeah ! :)
+      }
     }
   }
 }

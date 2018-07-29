@@ -35,7 +35,7 @@ private:
         : leading_edge_(leading), freq_(freq) {}
 
     bool is_word() const { return freq_ > 0; }
-    void add_freq(freq_t value) { freq_ += value; }
+    void freq_set(const freq_t value) { freq_ = value; }
     std::map<char_t, node_ptr_t> &children_get() { return children_; }
     edge_t &leading_edge_get() { return leading_edge_; }
     unsigned const &freq_get() const { return freq_; }
