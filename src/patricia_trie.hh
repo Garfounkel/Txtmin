@@ -49,7 +49,7 @@ private:
 
   node_ptr_t root_;
   edge_storage_t estore_;
-  unsigned node_number_;
+  unsigned node_number_ = 0;
 };
 
 #include "patricia_trie.hxx"
