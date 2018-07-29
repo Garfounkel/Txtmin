@@ -40,10 +40,6 @@ private:
     edge_t &leading_edge_get() { return leading_edge_; }
     unsigned const &freq_get() const { return freq_; }
 
-    void children_move_set(std::map<char_t, node_ptr_t> &x) {
-      children_ = std::move(x);
-    }
-
   private:
     edge_t leading_edge_;
     freq_t freq_;
