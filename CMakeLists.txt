@@ -4,8 +4,8 @@ project (TMLN)
 set(CMAKE_CXX_FLAGS "-Wall -Wextra -pedantic -std=c++17")
 
 set(SRC
-  # src/patricia_trie.cc
-  src/trie.cc
+  # src/trie.cc
+  src/string_storage.cc
 )
 
 add_executable(TextMiningCompiler src/compiler.cc ${SRC})
