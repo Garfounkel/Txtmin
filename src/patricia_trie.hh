@@ -12,15 +12,15 @@ template <typename EdgeStoragePolicy>
 class PatriciaTrie {
   class Node;
 
-  using char_t = char;
-  using string_t = std::basic_string<char_t>;
-  using index_t = unsigned;
-  using offset_t = std::size_t;
   using freq_t = unsigned;
   using node_t = Node;
   using node_ptr_t = std::shared_ptr<node_t>;
+
   using edge_storage_t = EdgeStoragePolicy;
-  using edge_t = typename EdgeStoragePolicy::edge_t;
+  using char_t = typename edge_storage_t::char_t;
+  using string_t = typename edge_storage_t::string_t;
+  using edge_t = typename edge_storage_t::edge_t;
+  using index_t = typename edge_storage_t::index_t;
 
 public:
   PatriciaTrie(std::istream& file);
@@ -29,7 +29,7 @@ public:
   void insert(const string_t& word, const freq_t freq);
 
 private:
-  std::unique_ptr<Node> new_node(const string_t& leading, freq_t freq);
+  std::unique_ptr<node_t> new_node(const string_t& leading = "", freq_t freq = 0);
 
   class Node {
   public:

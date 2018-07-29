@@ -5,6 +5,7 @@
 #include "string_storage.hh"
 // #include "trie.hh"
 
+using storage_t = StringStorage<char>;
 
 int main(int argc, char *argv[]) {
   if (argc != 3) {
@@ -16,7 +17,7 @@ int main(int argc, char *argv[]) {
   auto istream = std::ifstream(argv[1]);
   auto ostream = std::ofstream(argv[2]);
 
-  PatriciaTrie<StringStorage> ptrie(istream);
+  PatriciaTrie<storage_t> ptrie(istream);
 
   return 0;
 }
