@@ -22,6 +22,7 @@ private:
     index_t length() const { return content_.length(); }
     char_t &operator[](index_t at) { return content_[at]; }
     char_t operator[](const index_t at) const { return content_[at]; }
+    string_t const &content_get() const { return content_; }
 
   private:
     string_t content_;

@@ -22,6 +22,7 @@ public:
 
   // std::enable_if  trait read-only of edge_storage_t is false
   void insert(const string_t &word, const freq_t freq);
+  void write_dot(std::ostream &file);
 
 private:
   std::unique_ptr<node_t> new_node(const string_t &leading = "",
@@ -37,6 +38,7 @@ private:
     void add_freq(freq_t value) { freq_ += value; }
     std::map<char_t, node_ptr_t> &children_get() { return children_; }
     edge_t &leading_edge_get() { return leading_edge_; }
+    unsigned const &freq_get() const { return freq_; }
 
     void children_move_set(std::map<char_t, node_ptr_t> &x) {
       children_ = std::move(x);
