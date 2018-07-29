@@ -25,7 +25,7 @@ void PatriciaTrie<ESP>::insert(const string_t &word, freq_t freq) {
       break;
     }
 
-    auto current = it->second;  // Advance one level
+    auto current = it->second; // Advance one level
     auto &wordpart = current->leading_edge_get();
 
     if (wordpart.length() > 0) { // Node has a compressed edge
@@ -50,12 +50,8 @@ void PatriciaTrie<ESP>::insert(const string_t &word, freq_t freq) {
         // Create new intermediate node
         node_ptr_t new_inter_node = new_node(branch.second);
 
-        // Set cutted node new child
-        parent->children_get()[ch] =  new_inter_node;
+        parent->children_get()[ch] = new_inter_node;
         new_inter_node->children_get()[branch.first] = current;
-        // Set cutted node to correct freq
-        // auto cutted_node_freq = (c == word.length()) ? freq : 0;
-        // parent->freq_set(cutted_node_freq);
       }
 
       parent = current;
