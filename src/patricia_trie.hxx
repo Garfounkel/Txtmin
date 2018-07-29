@@ -48,20 +48,19 @@ void PatriciaTrie<ESP>::insert(const string_t &word, freq_t freq) {
         auto branch = wordpart.cut(i); // Split current edge at i
 
         auto &node = it->second;
-        auto orphans = std::move(node->children_get()); // Orphan children :(
-        // Clear map
-        // node->children_move_set(std::map<char_t, node_ptr_t>());
+        auto orphans = node->children_get(); // Orphan children :(
 
         // Create new intermediate node
+        node_ptr_t new_inter_node = new_node(branch.second, node->freq_get());
+        std::swap(new_inter_node->children_get(), orphans);
+        // No more orphans yeah ! :)
+
+        // Set cutted node new child
         ch = branch.first;
-        node->children_get()[ch] = new_node(branch.second, node->freq_get());
+        node->children_get()[ch] = new_inter_node;
         // Set cutted node to correct freq
         auto cutted_node_freq = (c == word.length()) ? freq : 0;
         node->freq_set(cutted_node_freq);
-
-        // Restore orphans to be new_node's children
-        node->children_get()[ch]->children_move_set(orphans);
-        // No more orphans yeah ! :)
       }
     }
   }
