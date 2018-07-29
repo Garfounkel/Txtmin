@@ -16,45 +16,47 @@ template <typename ESP>
 void PatriciaTrie<ESP>::insert(const string_t &word, freq_t freq) {
   auto parent = root_;
 
-  for (unsigned c = 0; c < word.length(); c++) {
-    char_t ch = word[c];
+  for (unsigned c = 0; c < word.length();) {
+    char_t first_char = word[c];
 
-    auto it = parent->children_get().find(ch);
+    auto it = parent->children_get().find(first_char);
     if (it == parent->children_get().end()) { // Straightforward insertion
-      parent->children_get()[ch] = new_node(word.substr(c + 1), freq);
+      parent->children_get()[first_char] = new_node(word.substr(c + 1), freq);
       break;
     }
 
     auto current = it->second; // Advance one level
     auto &wordpart = current->leading_edge_get();
 
-    if (wordpart.length() > 0) { // Node has a compressed edge
-      // Advance until prefixes are the same
-      index_t i = 0;
+    if (wordpart.length() == 0) {
       c++;
-      while (c < word.length() and wordpart[i] == word[c]) {
-        i++;
-        ch = word[++c];
-      }
-
-      if (wordpart.length() == i) { // wordpart is a prefix of word[c]
-        it = current->children_get().find(ch);
-        if (it == current->children_get().end()) { // Straightforward insertion
-          current->children_get()[ch] = new_node(word.substr(c + 1), freq);
-          break;
-        }
-        current = it->second; // Advance one level
-      } else {
-        auto branch = wordpart.cut(i); // Split current edge at i
-
-        // Create new intermediate node
-        node_ptr_t new_inter_node = new_node(branch.second);
-
-        parent->children_get()[ch] = new_inter_node;
-        new_inter_node->children_get()[branch.first] = current;
-      }
-
       parent = current;
+      continue;
+    }
+
+    // Node has a compressed edge
+    // Advance until prefixes are the same
+    index_t i = 0;
+    c++;
+    while (c < word.length() and wordpart[i] == word[c]) {
+      i++;
+      c++;
+    }
+
+    // wordpart is a prefix of word[c]
+    if (wordpart.length() == i) {
+      if (c < word.length()) {
+        parent = it->second; // Advance one level
+      }
+    } else {
+      auto branch = wordpart.cut(i); // Split current edge at i
+
+      // Create new intermediate node
+      node_ptr_t new_inter_node = new_node(branch.second);
+
+      parent->children_get()[first_char] = new_inter_node;
+      new_inter_node->children_get()[branch.first] = current;
+      parent = new_inter_node;
     }
   }
 }

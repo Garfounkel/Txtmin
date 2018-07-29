@@ -17,7 +17,7 @@ int main(int argc, char *argv[]) {
   auto ostream = std::ofstream(argv[2]);
 
   PatriciaTrie<storage_t> ptrie(istream);
-  ptrie.write_dot(ostream);
+  // ptrie.write_dot(ostream);
 
   return 0;
 }
