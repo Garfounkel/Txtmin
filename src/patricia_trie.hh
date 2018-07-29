@@ -35,6 +35,11 @@ private:
     bool is_word() const { return freq_ > 0; }
     void add_freq(freq_t value) { freq_ += value; }
     std::map<char_t, node_ptr_t> &children_get() { return children_; }
+    edge_t &leading_edge_get() const { return leading_edge_; }
+
+    void children_move_set(std::map<char_t, node_ptr_t> &x) {
+      children_ = std::move(x);
+    }
 
   private:
     edge_t leading_edge_;

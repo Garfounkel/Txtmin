@@ -39,8 +39,6 @@ void Trie::insert(const std::string &word, const unsigned freq) {
   }
 }
 
-void PTrie::insert(const std::string &word, const unsigned freq) {}
-
 void Trie::write_dot(std::ostream &file) {
   file << "digraph g {" << std::endl << "  0 [label=\"\"];" << std::endl;
 
