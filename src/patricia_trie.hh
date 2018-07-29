@@ -3,11 +3,12 @@
 #include <istream>
 #include <map>
 #include <memory>
+#include <cstdint>
 
 template <typename EdgeStoragePolicy> class PatriciaTrie {
   class Node;
 
-  using freq_t = unsigned;
+  using freq_t = std::uint32_t;
   using node_t = Node;
   using node_ptr_t = std::shared_ptr<node_t>;
 
@@ -39,7 +40,7 @@ private:
     void freq_set(const freq_t value) { freq_ = value; }
     std::map<char_t, node_ptr_t> &children_get() { return children_; }
     edge_t &leading_edge_get() { return leading_edge_; }
-    unsigned const &freq_get() const { return freq_; }
+    freq_t freq_get() const { return freq_; }
 
   private:
     edge_t leading_edge_;

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <cstdint>
 
 template <typename CharType = char> class StringStorage {
   class EdgeStorage;
@@ -9,7 +10,7 @@ public:
   using edge_t = EdgeStorage;
   using char_t = CharType;
   using string_t = std::basic_string<char_t>;
-  using index_t = unsigned;
+  using index_t = std::uint8_t;
   using branch_t = std::pair<char_t, edge_t>;
 
   edge_t new_edge(const string_t &content) { return EdgeStorage(content); }
