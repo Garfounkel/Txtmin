@@ -39,21 +39,7 @@ void Trie::insert(const std::string &word, const unsigned freq) {
   }
 }
 
-void PTrie::insert(const std::string &word, const unsigned freq) {
-  auto current_children = &root_->children_get();
-  node_ptr_t be(nullptr);
-
-  for (unsigned i = 0; i < word.length(); i++) {
-    char ch = word[i];
-
-    if ((auto it = current_children->find(ch)) != current_children->end()) {
-      current_children = &it->second->children_get();
-      // Last part of split
-    } else {
-      (*current_children)[ch] = new_node(word.substr(i + 1), freq);
-    }
-  }
-}
+void PTrie::insert(const std::string &word, const unsigned freq) {}
 
 void Trie::write_dot(std::ostream &file) {
   file << "digraph g {" << std::endl << "  0 [label=\"\"];" << std::endl;

@@ -4,8 +4,7 @@
 #include <map>
 #include <memory>
 
-template <typename EdgeStoragePolicy>
-class PatriciaTrie {
+template <typename EdgeStoragePolicy> class PatriciaTrie {
   class Node;
 
   using freq_t = unsigned;
@@ -19,27 +18,28 @@ class PatriciaTrie {
   using index_t = typename edge_storage_t::index_t;
 
 public:
-  PatriciaTrie(std::istream& file);
+  PatriciaTrie(std::istream &file);
 
-  //std::enable_if  trait read-only of edge_storage_t is false
-  void insert(const string_t& word, const freq_t freq);
+  // std::enable_if  trait read-only of edge_storage_t is false
+  void insert(const string_t &word, const freq_t freq);
 
 private:
-  std::unique_ptr<node_t> new_node(const string_t& leading = "", freq_t freq = 0);
+  std::unique_ptr<node_t> new_node(const string_t &leading = "",
+                                   freq_t freq = 0);
 
   class Node {
   public:
-    Node(const edge_t& leading, freq_t freq)
-     : leading_edge_(leading), freq_(freq)
-    {}
+    Node(const edge_t &leading, freq_t freq)
+        : leading_edge_(leading), freq_(freq) {}
 
-    bool is_word() const        { return freq_ > 0; }
+    bool is_word() const { return freq_ > 0; }
     void add_freq(freq_t value) { freq_ += value; }
+    std::map<char_t, node_ptr_t> &children_get() { return children_; }
 
   private:
-      edge_t leading_edge_;
-      freq_t freq_;
-      std::map<char_t, node_ptr_t> children_;
+    edge_t leading_edge_;
+    freq_t freq_;
+    std::map<char_t, node_ptr_t> children_;
   };
 
   node_ptr_t root_;
