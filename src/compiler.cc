@@ -3,7 +3,6 @@
 
 #include "patricia_trie.hh"
 #include "string_storage.hh"
-// #include "trie.hh"
 
 using storage_t = StringStorage<char>;
 
