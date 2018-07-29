@@ -1,12 +1,8 @@
 #pragma once
 
-#include <memory>
-#include <vector>
 #include <istream>
-#include <string>
-#include <optional>
 #include <map>
-#include <cassert>
+#include <memory>
 
 template <typename EdgeStoragePolicy>
 class PatriciaTrie {
