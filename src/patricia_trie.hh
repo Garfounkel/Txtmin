@@ -5,9 +5,10 @@
 #include <istream>
 #include <string>
 #include <optional>
-#include <variant>
+#include <map>
 #include <cassert>
 
+template <typename EdgeStoragePolicy>
 class PatriciaTrie {
   class Node;
 
@@ -15,79 +16,38 @@ class PatriciaTrie {
   using string_t = std::basic_string<char_t>;
   using index_t = unsigned;
   using offset_t = std::size_t;
+  using freq_t = unsigned;
   using node_t = Node;
   using node_ptr_t = std::shared_ptr<node_t>;
+  using edge_storage_t = EdgeStoragePolicy;
+  using edge_t = typename EdgeStoragePolicy::edge_t;
 
 public:
   PatriciaTrie(std::istream& file);
 
-  void insert(const string_t& word, const unsigned freq);
+  //std::enable_if  trait read-only of edge_storage_t is false
+  void insert(const string_t& word, const freq_t freq);
 
 private:
-  class TrieComponent {
+  std::unique_ptr<Node> new_node(const string_t& leading, freq_t freq);
+
+  class Node {
   public:
-    TrieComponent(PatriciaTrie* trie)
-     : trie_(trie)
+    Node(const edge_t& leading, freq_t freq)
+     : leading_edge_(leading), freq_(freq)
     {}
 
-    PatriciaTrie* trie_get() const { return trie_; }
+    bool is_word() const        { return freq_ > 0; }
+    void add_freq(freq_t value) { freq_ += value; }
 
   private:
-    PatriciaTrie* trie_;
-  };
-
-  class Edge: public TrieComponent {
-  public:
-    Edge(PatriciaTrie* trie, char_t first_char, offset_t offset, index_t length, node_ptr_t next)
-     : TrieComponent(trie), first_char_(first_char), offset_(offset), length_(length), next_(next)
-    {}
-
-    char_t get_char_at(index_t index) const;
-    index_t length_get() const { return length_; }
-    node_ptr_t next_get() const { return next_; }
-    void length_set(index_t value) { length_ = value; }
-
-  private:
-    char_t first_char_;
-    offset_t offset_;
-    index_t length_;
-    node_ptr_t next_;
-  };
-
-  class Node: public TrieComponent {
-  public:
-    Node(PatriciaTrie* trie, unsigned freq=0)
-     : TrieComponent(trie), freq_(freq)
-    {}
-
-    bool is_word() const;
-    std::optional<Edge*> get_edge(char_t c) const;
-    void create_edge(string_t::const_iterator start,
-                     string_t::const_iterator end);
-    void add_freq(unsigned value) { freq_ += value; }
-
-  private:
-      unsigned freq_;
-      std::vector<Edge> children_;
-  };
-
-  class Cursor: public TrieComponent {
-  public:
-    Cursor(Node* start)
-      : TrieComponent(start->trie_get()), current_(start), index_(0)
-    {}
-
-    bool next(char_t c);
-    bool is_node() const;
-    index_t index_get() const { return index_; }
-    Node& get_as_node() const { *std::get<Node*>(current_); }
-    Edge& get_as_edge() const { *std::get<Edge*>(current_); }
-
-  private:
-    std::variant<Node*, Edge*> current_;
-    index_t index_;
+      edge_t leading_edge_;
+      freq_t freq_;
+      std::map<char_t, node_ptr_t> children_;
   };
 
   node_ptr_t root_;
-  string_t char_table_;
+  edge_storage_t estore_;
 };
+
+#include "patricia_trie.hxx"

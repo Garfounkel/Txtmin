@@ -1,8 +1,10 @@
 #include <fstream>
 #include <iostream>
 
-// #include "patricia_trie.hh"
-#include "trie.hh"
+#include "patricia_trie.hh"
+#include "string_storage.hh"
+// #include "trie.hh"
+
 
 int main(int argc, char *argv[]) {
   if (argc != 3) {
@@ -14,8 +16,7 @@ int main(int argc, char *argv[]) {
   auto istream = std::ifstream(argv[1]);
   auto ostream = std::ofstream(argv[2]);
 
-  Trie trie(istream);
-  // trie.write_dot(ostream);
+  PatriciaTrie<StringStorage> ptrie(istream);
 
   return 0;
 }
