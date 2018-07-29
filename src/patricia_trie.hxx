@@ -64,12 +64,14 @@ void PatriciaTrie<ESP>::insert(const string_t &word, freq_t freq) {
 template <typename ESP>
 std::unique_ptr<typename PatriciaTrie<ESP>::node_t>
 PatriciaTrie<ESP>::new_node(const string_t &leading_chars, freq_t freq) {
+  node_number_++;
   return std::make_unique<node_t>(estore_.new_edge(leading_chars), freq);
 }
 
 template <typename ESP>
 std::unique_ptr<typename PatriciaTrie<ESP>::node_t>
 PatriciaTrie<ESP>::new_node(const edge_t &leading_edge, freq_t freq) {
+  node_number_++;
   return std::make_unique<node_t>(leading_edge, freq);
 }
 

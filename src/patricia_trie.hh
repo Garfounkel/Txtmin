@@ -23,6 +23,7 @@ public:
   // std::enable_if  trait read-only of edge_storage_t is false
   void insert(const string_t &word, const freq_t freq);
   void write_dot(std::ostream &file);
+  unsigned &node_number_get() { return node_number_; }
 
 private:
   std::unique_ptr<node_t> new_node(const string_t &leading = "",
@@ -48,6 +49,7 @@ private:
 
   node_ptr_t root_;
   edge_storage_t estore_;
+  unsigned node_number_;
 };
 
 #include "patricia_trie.hxx"
