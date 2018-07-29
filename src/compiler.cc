@@ -18,7 +18,7 @@ int main(int argc, char *argv[]) {
 
   PatriciaTrie<storage_t> ptrie(istream);
   std::cout << "Node number: " << ptrie.node_number_get() << std::endl;
-  ptrie.write_dot(ostream);
+  // ptrie.write_dot(ostream);
 
   return 0;
 }
