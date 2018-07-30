@@ -90,22 +90,22 @@ PatriciaTrie<ESP>::search_dist(const string_t &word, const index_t maxDist) {
 
   results_t results;
 
-  for (const auto &it : root_->children_get()) {
-    auto c = it.first;
-    auto node = it.second;
-    search_dist_rec(node, c, string_t(1, c), word, currentRow, results,
-                    maxDist);
+  NodeCursor root_cursor(root_, '\0');
+  for (auto &it : root_cursor.next_children_get()) {
+    auto c = it.current_char_get();
+    search_dist_rec(it, c, string_t(1, c), word, currentRow, results, maxDist);
   }
   return results;
 }
 
 template <typename ESP>
-void PatriciaTrie<ESP>::search_dist_rec(node_ptr_t node, char_t letter,
+void PatriciaTrie<ESP>::search_dist_rec(NodeCursor &cursor, char_t letter,
                                         string_t node_word,
                                         const string_t &word,
                                         std::vector<index_t> previousRow,
                                         results_t &results,
                                         const index_t maxDist) {
+  auto &node = cursor.node_get();
   index_t columns = word.length() + 1;
   std::vector<index_t> currentRow = {previousRow[0] + 1};
 
@@ -127,11 +127,9 @@ void PatriciaTrie<ESP>::search_dist_rec(node_ptr_t node, char_t letter,
   // TODO: Check with edges (using a cursor of some sort)
   auto min_elt = std::min_element(std::begin(currentRow), std::end(currentRow));
   if (*min_elt <= maxDist) {
-    for (const auto &it : node->children_get()) {
-      auto c = it.first;
-      auto node = it.second;
-      search_dist_rec(node, c, node_word + c, word, currentRow, results,
-                      maxDist);
+    for (auto &it : cursor.next_children_get()) {
+      auto c = it.current_char_get();
+      search_dist_rec(it, c, node_word + c, word, currentRow, results, maxDist);
     }
   }
 }
@@ -148,6 +146,27 @@ typename PatriciaTrie<ESP>::node_ptr_t
 PatriciaTrie<ESP>::new_node(const edge_t &leading_edge, freq_t freq) {
   node_number_++;
   return new node_t(leading_edge, freq);
+}
+
+template <typename ESP>
+std::vector<typename PatriciaTrie<ESP>::NodeCursor>
+PatriciaTrie<ESP>::NodeCursor::next_children_get() {
+  auto edge_len = node_->leading_edge_get().length();
+  if ((current_char_is_leading_ and offset_ < edge_len) or
+      offset_ + 1 < edge_len) {
+    if (current_char_is_leading_)
+      current_char_is_leading_ = false;
+    else
+      offset_++;
+    std::vector<NodeCursor> next_children = {*this};
+    return next_children;
+  }
+
+  std::vector<NodeCursor> next_children;
+  for (const auto &it : node_->children_get()) {
+    next_children.emplace_back(it.second, it.first);
+  }
+  return next_children;
 }
 
 template <typename ESP> void PatriciaTrie<ESP>::write_dot(std::ostream &file) {

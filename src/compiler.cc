@@ -36,7 +36,7 @@ int main(int argc, char *argv[]) {
 
   auto ptrie = PatriciaTrie<storage_t>::read_words_file(istream);
   std::cerr << "Node number: " << ptrie.node_number_get() << std::endl;
-  auto results = ptrie.search_dist("br", 5);
+  auto results = ptrie.search_dist("bar", 5);
   print_results(std::cout, results);
   ptrie.write_dot(ostream);
 
