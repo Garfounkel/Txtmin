@@ -4,8 +4,7 @@
 #include <stack>
 
 template <typename ESP>
-PatriciaTrie<ESP> PatriciaTrie<ESP>::read_words_file(std::istream &words)
-{
+PatriciaTrie<ESP> PatriciaTrie<ESP>::read_words_file(std::istream &words) {
   PatriciaTrie ptrie;
   while (words.good()) {
     string_t word;
@@ -17,13 +16,9 @@ PatriciaTrie<ESP> PatriciaTrie<ESP>::read_words_file(std::istream &words)
 }
 
 template <typename ESP>
-PatriciaTrie<ESP>::PatriciaTrie()
-  : root_(new Node(estore_.new_edge(""), 0))
-{}
+PatriciaTrie<ESP>::PatriciaTrie() : root_(new Node(estore_.new_edge(""), 0)) {}
 
-template <typename ESP>
-PatriciaTrie<ESP>::~PatriciaTrie()
-{
+template <typename ESP> PatriciaTrie<ESP>::~PatriciaTrie() {
   std::queue<node_ptr_t> queue;
   queue.push(root_);
   while (not queue.empty()) {
@@ -34,7 +29,6 @@ PatriciaTrie<ESP>::~PatriciaTrie()
     delete current;
   }
 }
-
 
 template <typename ESP>
 void PatriciaTrie<ESP>::insert(const string_t &word, freq_t freq) {
@@ -85,7 +79,6 @@ void PatriciaTrie<ESP>::insert(const string_t &word, freq_t freq) {
   }
 }
 
-template <typename ESP>
 typename PatriciaTrie<ESP>::node_ptr_t
 PatriciaTrie<ESP>::new_node(const string_t &leading_chars, freq_t freq) {
   node_number_++;

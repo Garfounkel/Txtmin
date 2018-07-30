@@ -1,16 +1,15 @@
 #pragma once
 
+#include <cstdint>
 #include <istream>
 #include <map>
+#include <memory>
+#include <vector>
 
 #include "vector_map.hh"
 
 template <typename EdgeStoragePolicy> class PatriciaTrie {
   class Node;
-
-  using freq_t = unsigned;
-  using node_t = Node;
-  using node_ptr_t = node_t*;
 
   using edge_storage_t = EdgeStoragePolicy;
   using char_t = typename edge_storage_t::char_t;
@@ -18,7 +17,17 @@ template <typename EdgeStoragePolicy> class PatriciaTrie {
   using edge_t = typename edge_storage_t::edge_t;
   using index_t = typename edge_storage_t::index_t;
 
+  using freq_t = unsigned;
+  using node_t = Node;
+  using node_ptr_t = node_t *;
   using children_t = VectorMap<char_t, node_ptr_t>;
+
+  struct search_result_t {
+    string_t word;
+    index_t distance;
+    freq_t freq;
+  };
+  using results_t = std::vector<search_result_t>;
 
 public:
   static PatriciaTrie read_words_file(std::istream &file);
@@ -30,6 +39,7 @@ public:
   void insert(const string_t &word, const freq_t freq);
   void write_dot(std::ostream &file);
   unsigned &node_number_get() { return node_number_; }
+  results_t search_dist(const string_t &word, const index_t maxDist);
 
 private:
   node_ptr_t new_node(const string_t &leading = "", freq_t freq = 0);
