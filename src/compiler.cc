@@ -16,7 +16,7 @@ int main(int argc, char *argv[]) {
   auto istream = std::ifstream(argv[1]);
   auto ostream = std::ofstream(argv[2]);
 
-  PatriciaTrie<storage_t> ptrie(istream);
+  auto ptrie = PatriciaTrie<storage_t>::read_words_file(istream);
   std::cout << "Node number: " << ptrie.node_number_get() << std::endl;
 //  ptrie.write_dot(ostream);
 

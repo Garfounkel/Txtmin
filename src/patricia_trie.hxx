@@ -1,16 +1,40 @@
 #pragma once
 
+#include <queue>
 #include <stack>
 
-template <typename ESP> PatriciaTrie<ESP>::PatriciaTrie(std::istream &words) {
-  root_ = new_node();
+template <typename ESP>
+PatriciaTrie<ESP> PatriciaTrie<ESP>::read_words_file(std::istream &words)
+{
+  PatriciaTrie ptrie;
   while (words.good()) {
     string_t word;
     freq_t freq;
     words >> word >> freq;
-    insert(word, freq);
+    ptrie.insert(word, freq);
+  }
+  return ptrie;
+}
+
+template <typename ESP>
+PatriciaTrie<ESP>::PatriciaTrie()
+  : root_(new Node(estore_.new_edge(""), 0))
+{}
+
+template <typename ESP>
+PatriciaTrie<ESP>::~PatriciaTrie()
+{
+  std::queue<node_ptr_t> queue;
+  queue.push(root_);
+  while (not queue.empty()) {
+    auto current = queue.front();
+    queue.pop();
+    for (auto child : current->children_get())
+      queue.push(child.second);
+    delete current;
   }
 }
+
 
 template <typename ESP>
 void PatriciaTrie<ESP>::insert(const string_t &word, freq_t freq) {
@@ -62,17 +86,17 @@ void PatriciaTrie<ESP>::insert(const string_t &word, freq_t freq) {
 }
 
 template <typename ESP>
-std::unique_ptr<typename PatriciaTrie<ESP>::node_t>
+typename PatriciaTrie<ESP>::node_ptr_t
 PatriciaTrie<ESP>::new_node(const string_t &leading_chars, freq_t freq) {
   node_number_++;
-  return std::make_unique<node_t>(estore_.new_edge(leading_chars), freq);
+  return new node_t(estore_.new_edge(leading_chars), freq);
 }
 
 template <typename ESP>
-std::unique_ptr<typename PatriciaTrie<ESP>::node_t>
+typename PatriciaTrie<ESP>::node_ptr_t
 PatriciaTrie<ESP>::new_node(const edge_t &leading_edge, freq_t freq) {
   node_number_++;
-  return std::make_unique<node_t>(leading_edge, freq);
+  return new node_t(leading_edge, freq);
 }
 
 template <typename ESP> void PatriciaTrie<ESP>::write_dot(std::ostream &file) {

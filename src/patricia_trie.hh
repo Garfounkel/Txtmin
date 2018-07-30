@@ -2,17 +2,15 @@
 
 #include <istream>
 #include <map>
-#include <memory>
-#include <cstdint>
 
 #include "vector_map.hh"
 
 template <typename EdgeStoragePolicy> class PatriciaTrie {
   class Node;
 
-  using freq_t = std::uint32_t;
+  using freq_t = unsigned;
   using node_t = Node;
-  using node_ptr_t = std::shared_ptr<node_t>;
+  using node_ptr_t = node_t*;
 
   using edge_storage_t = EdgeStoragePolicy;
   using char_t = typename edge_storage_t::char_t;
@@ -23,7 +21,10 @@ template <typename EdgeStoragePolicy> class PatriciaTrie {
   using children_t = VectorMap<char_t, node_ptr_t>;
 
 public:
-  PatriciaTrie(std::istream &file);
+  static PatriciaTrie read_words_file(std::istream &file);
+
+  PatriciaTrie();
+  ~PatriciaTrie();
 
   // std::enable_if  trait read-only of edge_storage_t is false
   void insert(const string_t &word, const freq_t freq);
@@ -31,9 +32,8 @@ public:
   unsigned &node_number_get() { return node_number_; }
 
 private:
-  std::unique_ptr<node_t> new_node(const string_t &leading = "",
-                                   freq_t freq = 0);
-  std::unique_ptr<node_t> new_node(const edge_t &leading_edge, freq_t freq = 0);
+  node_ptr_t new_node(const string_t &leading = "", freq_t freq = 0);
+  node_ptr_t new_node(const edge_t &leading_edge, freq_t freq = 0);
 
   class Node {
   public:
