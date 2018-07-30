@@ -4,7 +4,7 @@ import glob
 import os
 
 
-class bcolors:
+class col:
     HEADER = '\033[95m'
     OKBLUE = '\033[94m'
     OKGREEN = '\033[92m'
@@ -22,6 +22,7 @@ def usage():
 
 
 def test_cat_echo():
+    print(f'--- {col.OKBLUE}Testing cat and echo as input{col.ENDC} ---')
     tmp_file = 'tmp.in'
     with open(tmp_file, 'w') as file:
         file.write("approx 0 test")
@@ -38,6 +39,7 @@ def test_cat_echo():
     mine_process = sp.run(['echo', echo, '|', f'./{mine}', mine_bin],
                           stdout=sp.PIPE, stderr=sp.DEVNULL)
     print_test('echo ' + echo + ' | ./App bin', ref_process, mine_process)
+    print('-------------------------------------')
 
 
 def print_test(testname, ref_process, mine_process):
@@ -48,13 +50,13 @@ def print_test(testname, ref_process, mine_process):
     stdout_ok = ref_process.stdout == mine_process.stdout
 
     if returncode_ok and stdout_ok:
-        print(f"{testname}: {bcolors.OKGREEN}OK{bcolors.ENDC}")
+        print(f"{testname}: {col.OKGREEN}OK{col.ENDC}")
     else:
-        print(f"{testname}: {bcolors.FAIL}KO{bcolors.ENDC} ")
+        print(f"{testname}: {col.FAIL}KO{col.ENDC} ")
         if not returncode_ok:
             print(f"\treturn code: {mine_code}[mine], {ref_code}[ref]")
         if not stdout_ok:
-            print("\tstdout differs")
+            print(f"\t{col.HEADER}stdout differs{col.ENDC}")
         else:
             print("\tstdout OK")
 
