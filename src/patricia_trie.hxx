@@ -119,12 +119,12 @@ void PatriciaTrie<ESP>::search_dist_rec(NodeCursor &cursor, char_t letter,
     // TODO: Add translation cost
   }
 
-  if (currentRow.back() <= maxDist and node->is_word()) {
+  if (currentRow.back() <= maxDist and node->is_word() and
+      (cursor.offset_get() + 1 >= node->leading_edge_get().length())) {
     results.push_back(
         search_result_t{node_word, currentRow.back(), node->freq_get()});
   }
 
-  // TODO: Check with edges (using a cursor of some sort)
   auto min_elt = std::min_element(std::begin(currentRow), std::end(currentRow));
   if (*min_elt <= maxDist) {
     for (auto &it : cursor.next_children_get()) {

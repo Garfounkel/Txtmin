@@ -75,7 +75,7 @@ private:
           current_char_is_leading_(true) {}
 
     node_ptr_t &node_get() { return node_; }
-    index_t &offset_get() const { return offset_; } // TODO: Remove, maybe
+    index_t &offset_get() { return offset_; }
     const char_t &current_char_get() const {
       if (current_char_is_leading_)
         return leading_char_;
