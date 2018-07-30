@@ -19,6 +19,6 @@ int main(int argc, char *argv[]) {
   auto ptrie = PatriciaTrie<storage_t>::read_words_file(istream);
   std::cout << "Node number: " << ptrie.node_number_get() << std::endl;
 //  ptrie.write_dot(ostream);
-
+  ptrie.serialize(argv[2]);
   return 0;
 }

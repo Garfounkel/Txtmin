@@ -1,5 +1,7 @@
 #pragma once
 
+#include <fstream>
+#include <ostream>
 #include <queue>
 #include <stack>
 
@@ -125,7 +127,7 @@ template <typename ESP> void PatriciaTrie<ESP>::write_dot(std::ostream &file) {
 
       // Write edge's label
       file << "  " << parent_index << " -> " << index << " [label=\""
-           << it->first << "[" << it->second->leading_edge_get().content_get()
+           << it->first << "[" << it->second->leading_edge_get().get_as_string()
            << "]\"];" << std::endl;
 
       // Push next node with it's parent's index
@@ -134,4 +136,32 @@ template <typename ESP> void PatriciaTrie<ESP>::write_dot(std::ostream &file) {
   }
 
   file << "}" << std::endl;
+}
+
+template <typename ESP>
+void PatriciaTrie<ESP>::serialize(const std::string& path) const
+{
+  std::ofstream out(path, std::ios::out | std::ios::binary);
+
+  auto dump_val = [&out](auto val) {
+    out.write(reinterpret_cast<char*>(&val), sizeof(val));
+  };
+
+  estore_.dump(out);
+  std::queue<node_ptr_t> queue;
+  queue.push(root_);
+  while (not queue.empty()) {
+    auto current = queue.front();
+    queue.pop();
+
+    const auto& edge = current->leading_edge_get();
+    dump_val(edge.length());
+    dump_val(edge.offset());
+    dump_val(current->freq_get());
+    dump_val(current->children_get().size());
+    for (auto child : current->children_get()) {
+      queue.push(child.second);
+      dump_val(child.first);
+    }
+  }
 }

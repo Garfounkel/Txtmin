@@ -31,6 +31,8 @@ public:
   void write_dot(std::ostream &file);
   unsigned &node_number_get() { return node_number_; }
 
+  void serialize(const std::string& path) const;
+
 private:
   node_ptr_t new_node(const string_t &leading = "", freq_t freq = 0);
   node_ptr_t new_node(const edge_t &leading_edge, freq_t freq = 0);
