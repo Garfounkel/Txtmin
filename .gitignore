@@ -1,7 +1,8 @@
 ### Project Related ###
 _build/
 build/
-ref/
+subject/ref/linux64/dict.bin
+osx/
 
 ### C++ ###
 # Prerequisites

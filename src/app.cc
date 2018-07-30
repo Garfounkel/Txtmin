@@ -44,7 +44,7 @@ void process_stream(std::istream &in, PatriciaTrie<storage_t> &ptrie) {
 
     max_dist = std::max(max_dist, 0);
 
-    std::cerr << "[Log]" << max_dist << std::endl;
+    std::cerr << "[Log] approx " << max_dist << " " << word << std::endl;
     auto results = ptrie.search_dist(word, max_dist);
     print_results(std::cout, results);
   }
