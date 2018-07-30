@@ -1,10 +1,10 @@
 #include <fstream>
 #include <iostream>
 
-#include "patricia_trie.hh"
-#include "string_storage.hh"
+#include "ptrie/patricia_trie.hh"
+#include "ptrie/string_storage.hh"
 
-using storage_t = StringStorage<char>;
+using storage_t = ptrie::StringStorage;
 
 int main(int argc, char *argv[]) {
   if (argc != 3 and (argc != 5 or argv[3] != std::string("--dot_output"))) {
@@ -17,7 +17,7 @@ int main(int argc, char *argv[]) {
 
   auto in = std::ifstream(argv[1]);
 
-  auto ptrie = PatriciaTrie<storage_t>::read_words_file(in);
+  auto ptrie = ptrie::PatriciaTrie<storage_t>::read_words_file(in);
   std::cerr << "Node number: " << ptrie.node_number_get() << std::endl;
 
   ptrie.serialize(argv[2]);
