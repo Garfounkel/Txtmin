@@ -1,5 +1,7 @@
 #pragma once
 
+#include <algorithm>
+#include <numeric>
 #include <queue>
 #include <stack>
 
@@ -79,6 +81,62 @@ void PatriciaTrie<ESP>::insert(const string_t &word, freq_t freq) {
   }
 }
 
+template <typename ESP>
+typename PatriciaTrie<ESP>::results_t
+PatriciaTrie<ESP>::search_dist(const string_t &word, const index_t maxDist) {
+
+  std::vector<index_t> currentRow(word.length() + 1);
+  std::iota(std::begin(currentRow), std::end(currentRow), 0);
+
+  results_t results;
+
+  for (const auto &it : root_->children_get()) {
+    auto c = it.first;
+    auto node = it.second;
+    search_dist_rec(node, c, string_t(1, c), word, currentRow, results,
+                    maxDist);
+  }
+  return results;
+}
+
+template <typename ESP>
+void PatriciaTrie<ESP>::search_dist_rec(node_ptr_t node, char_t letter,
+                                        string_t node_word,
+                                        const string_t &word,
+                                        std::vector<index_t> previousRow,
+                                        results_t &results,
+                                        const index_t maxDist) {
+  index_t columns = word.length() + 1;
+  std::vector<index_t> currentRow = {previousRow[0] + 1};
+
+  for (index_t col = 1; col < columns; col++) {
+    auto insertionCost = currentRow[col - 1] + 1;
+    auto supressionCost = previousRow[col] + 1;
+    auto subCost = (word[col - 1] != letter) ? previousRow[col - 1] + 1
+                                             : previousRow[col - 1];
+    currentRow.push_back(std::min({insertionCost, supressionCost, subCost}));
+
+    // TODO: Add translation cost
+  }
+
+  if (currentRow.back() <= maxDist and node->is_word()) {
+    results.push_back(
+        search_result_t{node_word, currentRow.back(), node->freq_get()});
+  }
+
+  // TODO: Check with edges (using a cursor of some sort)
+  auto min_elt = std::min_element(std::begin(currentRow), std::end(currentRow));
+  if (*min_elt <= maxDist) {
+    for (const auto &it : node->children_get()) {
+      auto c = it.first;
+      auto node = it.second;
+      search_dist_rec(node, c, node_word + c, word, currentRow, results,
+                      maxDist);
+    }
+  }
+}
+
+template <typename ESP>
 typename PatriciaTrie<ESP>::node_ptr_t
 PatriciaTrie<ESP>::new_node(const string_t &leading_chars, freq_t freq) {
   node_number_++;

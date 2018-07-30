@@ -22,6 +22,7 @@ template <typename EdgeStoragePolicy> class PatriciaTrie {
   using node_ptr_t = node_t *;
   using children_t = VectorMap<char_t, node_ptr_t>;
 
+public:
   struct search_result_t {
     string_t word;
     index_t distance;
@@ -40,6 +41,9 @@ public:
   void write_dot(std::ostream &file);
   unsigned &node_number_get() { return node_number_; }
   results_t search_dist(const string_t &word, const index_t maxDist);
+  void search_dist_rec(node_ptr_t node, char_t letter, string_t node_word,
+                       const string_t &word, std::vector<index_t> previousRow,
+                       results_t &results, const index_t maxDist);
 
 private:
   node_ptr_t new_node(const string_t &leading = "", freq_t freq = 0);
