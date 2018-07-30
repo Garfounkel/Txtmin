@@ -86,7 +86,7 @@ void PatriciaTrie<ESP>::insert(const string_t &word, freq_t freq) {
 template <typename ESP>
 typename PatriciaTrie<ESP>::results_t
 PatriciaTrie<ESP>::search_dist(const string_t &word, const index_t maxDist) {
-
+  std::vector<index_t> transpoRow;
   std::vector<index_t> currentRow(word.length() + 1);
   std::iota(std::begin(currentRow), std::end(currentRow), 0);
 
@@ -95,43 +95,49 @@ PatriciaTrie<ESP>::search_dist(const string_t &word, const index_t maxDist) {
   NodeCursor root_cursor(root_, '\0');
   for (auto &it : root_cursor.next_children_get()) {
     auto c = it.current_char_get();
-    search_dist_rec(it, c, string_t(1, c), word, currentRow, results, maxDist);
+    search_dist_rec(it, c, string_t(1, c), word, currentRow, transpoRow,
+                    results, maxDist);
   }
   return results;
 }
 
 template <typename ESP>
-void PatriciaTrie<ESP>::search_dist_rec(NodeCursor &cursor, char_t letter,
-                                        string_t node_word,
-                                        const string_t &word,
-                                        std::vector<index_t> previousRow,
-                                        results_t &results,
-                                        const index_t maxDist) {
+void PatriciaTrie<ESP>::search_dist_rec(
+    NodeCursor &cursor, char_t letter, string_t node_word, const string_t &word,
+    std::vector<index_t> previousRow, std::vector<index_t> transpoRow,
+    results_t &results, const index_t maxDist) {
   auto &node = cursor.node_get();
   index_t columns = word.length() + 1;
   std::vector<index_t> currentRow = {previousRow[0] + 1};
 
   for (index_t col = 1; col < columns; col++) {
+    auto dist = (word[col - 1] != letter) ? 1 : 0;
+
     auto insertionCost = currentRow[col - 1] + 1;
     auto supressionCost = previousRow[col] + 1;
-    auto subCost = (word[col - 1] != letter) ? previousRow[col - 1] + 1
-                                             : previousRow[col - 1];
-    currentRow.push_back(std::min({insertionCost, supressionCost, subCost}));
+    auto subCost = previousRow[col - 1] + dist;
 
-    // TODO: Add translation cost
+    auto min_dist = std::min({insertionCost, supressionCost, subCost});
+
+    if (col > 1 and transpoRow.size() and
+        word[col - 1] == node_word[col - 2] and word[col - 2] == letter) {
+      min_dist = std::min(min_dist, transpoRow[col - 2] + dist);
+    }
+    currentRow.push_back(min_dist);
   }
 
   if (currentRow.back() <= maxDist and node->is_word() and
       (cursor.offset_get() + 1 >= node->leading_edge_get().length())) {
-    results.push_back(
-        search_result_t{node_word, currentRow.back(), node->freq_get()});
+    auto res = search_result_t{node_word, currentRow.back(), node->freq_get()};
+    results.push_back(res);
   }
 
   auto min_elt = std::min_element(std::begin(currentRow), std::end(currentRow));
   if (*min_elt <= maxDist) {
     for (auto &it : cursor.next_children_get()) {
       auto c = it.current_char_get();
-      search_dist_rec(it, c, node_word + c, word, currentRow, results, maxDist);
+      search_dist_rec(it, c, node_word + c, word, currentRow, previousRow,
+                      results, maxDist);
     }
   }
 }
@@ -209,12 +215,11 @@ template <typename ESP> void PatriciaTrie<ESP>::write_dot(std::ostream &file) {
 }
 
 template <typename ESP>
-void PatriciaTrie<ESP>::serialize(const std::string& path) const
-{
+void PatriciaTrie<ESP>::serialize(const std::string &path) const {
   std::ofstream out(path, std::ios::out | std::ios::binary);
 
   auto dump_val = [&out](auto val) {
-    out.write(reinterpret_cast<char*>(&val), sizeof(val));
+    out.write(reinterpret_cast<char *>(&val), sizeof(val));
   };
 
   estore_.dump(out);
@@ -224,7 +229,7 @@ void PatriciaTrie<ESP>::serialize(const std::string& path) const
     auto current = queue.front();
     queue.pop();
 
-    const auto& edge = current->leading_edge_get();
+    const auto &edge = current->leading_edge_get();
     dump_val(edge.length());
     dump_val(edge.offset());
     dump_val(current->freq_get());

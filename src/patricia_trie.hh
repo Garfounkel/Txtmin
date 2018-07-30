@@ -43,12 +43,13 @@ public:
   unsigned &node_number_get() { return node_number_; }
   results_t search_dist(const string_t &word, const index_t maxDist);
 
-  void serialize(const std::string& path) const;
+  void serialize(const std::string &path) const;
 
 private:
   void search_dist_rec(NodeCursor &cursor, char_t letter, string_t node_word,
                        const string_t &word, std::vector<index_t> previousRow,
-                       results_t &results, const index_t maxDist);
+                       std::vector<index_t> transpoRow, results_t &results,
+                       const index_t maxDist);
 
   node_ptr_t new_node(const string_t &leading = "", freq_t freq = 0);
   node_ptr_t new_node(const edge_t &leading_edge, freq_t freq = 0);
