@@ -5,6 +5,8 @@
 #include <memory>
 #include <cstdint>
 
+#include "vector_map.hh"
+
 template <typename EdgeStoragePolicy> class PatriciaTrie {
   class Node;
 
@@ -17,6 +19,8 @@ template <typename EdgeStoragePolicy> class PatriciaTrie {
   using string_t = typename edge_storage_t::string_t;
   using edge_t = typename edge_storage_t::edge_t;
   using index_t = typename edge_storage_t::index_t;
+
+  using children_t = VectorMap<char_t, node_ptr_t>;
 
 public:
   PatriciaTrie(std::istream &file);
@@ -38,14 +42,14 @@ private:
 
     bool is_word() const { return freq_ > 0; }
     void freq_set(const freq_t value) { freq_ = value; }
-    std::map<char_t, node_ptr_t> &children_get() { return children_; }
+    children_t &children_get() { return children_; }
     edge_t &leading_edge_get() { return leading_edge_; }
     freq_t freq_get() const { return freq_; }
 
   private:
     edge_t leading_edge_;
     freq_t freq_;
-    std::map<char_t, node_ptr_t> children_;
+    children_t children_;
   };
 
   node_ptr_t root_;
