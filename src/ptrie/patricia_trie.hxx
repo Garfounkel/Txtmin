@@ -25,6 +25,10 @@ namespace ptrie {
     in.seekg(sl + sizeof(sl));
 
     self_t ptrie{storage};
+
+    if (!ptrie.storage_is_good())
+      return ptrie;
+
     std::queue<std::pair<node_ptr_t, char_t>> queue;
 
     auto read_children = [&in, &queue, &read_val](node_ptr_t node) {

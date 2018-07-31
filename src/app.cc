@@ -2,12 +2,16 @@
 #include <iostream>
 
 #include "ptrie/patricia_trie.hh"
+#include "ptrie/mmap_storage.hh"
 #include "ptrie/string_storage.hh"
 
-using storage_t = ptrie::StringStorage;
+using storage_t = ptrie::MmapStorage;
+using backup_storage_t = ptrie::StringStorage;
 using ptrie_t = ptrie::PatriciaTrie<storage_t>;
+using backup_t = ptrie::PatriciaTrie<backup_storage_t>;
 
-void print_results(std::ostream &out, const ptrie_t::results_t &results) {
+template <class Results>
+void print_results(std::ostream &out, const Results &results) {
   out << "[";
   for (auto res = std::begin(results); res < std::end(results); res++) {
     out << "{"
@@ -24,7 +28,8 @@ void print_results(std::ostream &out, const ptrie_t::results_t &results) {
   out << "]" << std::endl;
 }
 
-void process_stream(std::istream &in, ptrie_t& ptrie) {
+template <class PTrie>
+void process_stream(std::istream &in, PTrie& ptrie) {
   while (in.good()) {
     std::string approx;
     std::string word;
@@ -58,7 +63,15 @@ int main(int argc, char *argv[]) {
   }
 
   auto ptrie = ptrie::PatriciaTrie<storage_t>::deserialize(argv[1]);
-  process_stream(std::cin, ptrie);
 
+  // If mmap failed, fall back to string storage
+  if (not ptrie.storage_is_good()) {
+    std::cerr << "Mmap failed. Using string storage instead." << std::endl;
+    auto backup = ptrie::PatriciaTrie<backup_storage_t>::deserialize(argv[1]);
+    process_stream(std::cin, backup);
+    return 0;
+  }
+
+  process_stream(std::cin, ptrie);
   return 0;
 }

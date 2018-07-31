@@ -74,6 +74,8 @@ namespace ptrie {
     unsigned &node_number_get() { return node_number_; }
     results_t search_dist(const string_t &word, const index_t maxDist);
 
+    bool storage_is_good() const { return estore_->good(); }
+
     void serialize(const std::string &path) const;
 
   private:

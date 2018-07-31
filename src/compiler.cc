@@ -3,7 +3,6 @@
 
 #include "ptrie/patricia_trie.hh"
 #include "ptrie/string_storage.hh"
-#include "ptrie/mmap_storage.hh"
 
 using storage_t = ptrie::StringStorage;
 using ptrie_t = ptrie::PatriciaTrie<storage_t>;

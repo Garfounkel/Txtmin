@@ -54,6 +54,8 @@ namespace ptrie {
       return out;
     }
 
+    bool good() const { return true; }
+
   private:
     string_t data_;
   };

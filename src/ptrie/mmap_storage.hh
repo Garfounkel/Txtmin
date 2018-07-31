@@ -1,5 +1,6 @@
 #pragma once
 
+#include <functional>
 #include <ostream>
 #include <string>
 #include <utility>
@@ -34,40 +35,51 @@ namespace ptrie {
         len = 0;
       }
       close(fd);
-      return self_t(static_cast<const char*>(data_), len);
+      return self_t(static_cast<char*>(data_), len);
     }
 
-    ~MmapStorage()
+    /*~MmapStorage()
     {
       munmap(const_cast<char*>(data_), len_);
       data_ = nullptr;
       len_ = 0;
-    }
+    }*/
 
     edge_t empty_edge() const { return edge_t(this, 0, 0); }
 
     // remove me
     //edge_t new_edge(const string_t& content) { assert(false); return edge_t(*this, 0, 0); }
 
-    char operator[](const index_t at) const { return data_[at]; }
+    char operator[](const index_t at) const { return data_.get()[at]; }
 
     string_t substr(index_t off, index_t len) const
-    { return std::string(data_ + off, data_ + off + len); }
+    { return std::string(data_.get() + off, data_.get() + off + len); }
 
     std::ostream& serialize(std::ostream& out) const
     {
       out.write(reinterpret_cast<const char*>(&len_), sizeof(len_));
-      out.write(data_, len_);
+      out.write(data_.get(), len_);
       return out;
     }
 
+    bool good() const { return data_ != nullptr; }
+
   private:
-    MmapStorage(const char* mmapped_ptr, index_t len)
-      : len_(len), data_(mmapped_ptr)
-    {}
+
+    static void unmap(char* mmapped_ptr, index_t len) {
+      if (mmapped_ptr)
+        munmap(mmapped_ptr, len);
+    }
+
+    MmapStorage(char* mmapped_ptr, index_t len)
+      : len_(len)
+    {
+      using namespace std::placeholders;
+      data_ = std::shared_ptr<char_t>(mmapped_ptr, std::bind(unmap, _1, len));
+    }
 
     index_t len_;
-    const char* data_;
+    std::shared_ptr<char_t> data_;
   };
 
 }
