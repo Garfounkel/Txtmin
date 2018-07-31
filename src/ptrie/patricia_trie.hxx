@@ -171,7 +171,7 @@ void PatriciaTrie<ESP>::search_dist_rec(
     auto min_dist = std::min({insertionCost, supressionCost, subCost});
 
     if (col > 1 and transpoRow.size() and
-        word[col - 1] == node_word[col - 2] and word[col - 2] == letter) {
+        word[col - 1] == node_word[col - 2] and word[col - 2] == node_word[col - 1]) {
       min_dist = std::min(min_dist, transpoRow[col - 2] + dist);
     }
     currentRow.push_back(min_dist);
