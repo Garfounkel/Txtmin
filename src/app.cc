@@ -7,17 +7,6 @@
 using storage_t = ptrie::StringStorage;
 using ptrie_t = ptrie::PatriciaTrie<storage_t>;
 
-ptrie_t ptrie_from_words_file(std::istream &words) {
-    ptrie_t ptrie = ptrie_t(storage_t());
-    while (words.good()) {
-      typename ptrie_t::string_t word;
-      typename ptrie_t::freq_t freq;
-      words >> word >> freq;
-      ptrie.insert(word, freq);
-    }
-    return ptrie;
-}
-
 void print_results(std::ostream &out, const ptrie_t::results_t &results) {
   out << "[";
   for (auto res = std::begin(results); res < std::end(results); res++) {
@@ -68,9 +57,7 @@ int main(int argc, char *argv[]) {
     exit(64);
   }
 
-  auto istream = std::ifstream(argv[1]);
-
-  auto ptrie = ptrie_from_words_file(istream);
+  auto ptrie = ptrie::PatriciaTrie<storage_t>::deserialize(argv[1]);
   process_stream(std::cin, ptrie);
 
   return 0;
