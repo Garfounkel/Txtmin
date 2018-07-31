@@ -74,7 +74,8 @@ Ce système nous offre une certaine flexibilité agréable sans perte en perform
 
 > Listez l’ensemble des tests effectués sur votre programme (en plus des units tests)
 
-
+Nous avons utilisé une test-suite composé d'un script en python qui compare la sortie standard de la ref avec celle de notre programme pour un certain nombre de queries.
+Nous avons également écrit une fonction permettant d'écrire notre Patricia Trie au format dot pour pouvoir le visualiser sous forme d'image. Cela nous a été très utile pour débugger la création de notre Patricia.
 
 > Avez-vous détecté des cas où la correction par distance ne fonctionnait pas (même avec une distance élevée) ?
 
