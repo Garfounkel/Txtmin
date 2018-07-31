@@ -18,7 +18,11 @@ namespace ptrie {
 
     index_t offset() const { return offset_; }
     index_t length() const { return length_; }
-    char_t operator[](const index_t at) const { return data_[offset_ + at]; }
+    char_t operator[](const index_t at) const {
+      if (at >= length_)
+        return '\0';
+      return data_[offset_ + at];
+    }
     string_t get_as_string() const { return data_.substr(offset_, length_); }
 
     branch_t cut(index_t at)
