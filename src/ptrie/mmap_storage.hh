@@ -9,6 +9,9 @@ extern "C" {
   #include <sys/mman.h>
   #include <fcntl.h>
   #include <unistd.h>
+
+#include <stdio.h>
+#include <errno.h>
 }
 
 #include "edge.hh"
@@ -28,37 +31,28 @@ namespace ptrie {
     {
       int fd = open(path.c_str(), O_RDONLY);
       if (fd == -1)
-        return self_t(nullptr, 0);
-      auto data_ = mmap(nullptr, len, PROT_READ, MAP_SHARED, fd, off);
+        return self_t(nullptr, 0, 0);
+      auto data_ = mmap(NULL, len, PROT_READ, MAP_SHARED, fd, 0);
       if (data_ == MAP_FAILED) {
+        perror("mmap: ");
         data_ = nullptr;
         len = 0;
       }
       close(fd);
-      return self_t(static_cast<char*>(data_), len);
+      return self_t(static_cast<char*>(data_), len, off);
     }
-
-    /*~MmapStorage()
-    {
-      munmap(const_cast<char*>(data_), len_);
-      data_ = nullptr;
-      len_ = 0;
-    }*/
 
     edge_t empty_edge() const { return edge_t(this, 0, 0); }
 
-    // remove me
-    //edge_t new_edge(const string_t& content) { assert(false); return edge_t(*this, 0, 0); }
-
-    char operator[](const index_t at) const { return data_.get()[at]; }
+    char operator[](const index_t at) const { return ptr()[at]; }
 
     string_t substr(index_t off, index_t len) const
-    { return std::string(data_.get() + off, data_.get() + off + len); }
+    { return std::string(ptr() + off, ptr() + off + len); }
 
     std::ostream& serialize(std::ostream& out) const
     {
       out.write(reinterpret_cast<const char*>(&len_), sizeof(len_));
-      out.write(data_.get(), len_);
+      out.write(ptr(), len_);
       return out;
     }
 
@@ -66,18 +60,22 @@ namespace ptrie {
 
   private:
 
+    char *ptr() { return data_.get() + off_; }
+    const char *ptr() const { return data_.get() + off_; }
+
     static void unmap(char* mmapped_ptr, index_t len) {
       if (mmapped_ptr)
         munmap(mmapped_ptr, len);
     }
 
-    MmapStorage(char* mmapped_ptr, index_t len)
-      : len_(len)
+    MmapStorage(char* mmapped_ptr, index_t len, index_t off)
+      : off_(off), len_(len)
     {
       using namespace std::placeholders;
       data_ = std::shared_ptr<char_t>(mmapped_ptr, std::bind(unmap, _1, len));
     }
 
+    index_t off_;
     index_t len_;
     std::shared_ptr<char_t> data_;
   };

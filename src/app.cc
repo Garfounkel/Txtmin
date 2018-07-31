@@ -66,7 +66,7 @@ int main(int argc, char *argv[]) {
 
   // If mmap failed, fall back to string storage
   if (not ptrie.storage_is_good()) {
-    std::cerr << "Mmap failed. Using string storage instead." << std::endl;
+    std::cerr << "[Log] Mmap failed. Using string storage instead." << std::endl;
     auto backup = ptrie::PatriciaTrie<backup_storage_t>::deserialize(argv[1]);
     process_stream(std::cin, backup);
     return 0;
