@@ -39,7 +39,6 @@ def test_cat_echo():
     mine_process = sp.run(['echo', echo, '|', f'./{mine}', mine_bin],
                           stdout=sp.PIPE, stderr=sp.DEVNULL)
     print_test('echo ' + echo + ' | ./App bin', ref_process, mine_process)
-    print('-------------------------------------')
 
 
 def print_test(testname, ref_process, mine_process):
@@ -81,6 +80,7 @@ if __name__ == '__main__':
 
     test_cat_echo()
 
+    print(f'----------- {col.OKBLUE}Tests stdin{col.ENDC} -------------')
     for filename in glob.glob(os.path.join(testspath, '*.in')):
         with open(filename) as file:
             test = file.read().encode()
