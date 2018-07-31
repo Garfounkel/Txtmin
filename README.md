@@ -44,7 +44,33 @@ approx 1 coupedumonde
 ## FAQ (in French)
 > Decrivez les choix de design de votre programme:
 
+Nous utilisons un Patricia Trie pour stocker les mots et leurs fréquences. Le
+Patricia Trie est plus performant qu'un trie et offre les mêmes avantages (cf
+question 4). Nous avons choisi d'exporter la partie concernant le stockage des
+bords du trie dans des classes séparées afin d'éviter d'implémenter séparemment
+une version dynamique et une version statique. En effet, le compilateur doit
+lire une liste de mots, construire le trie associé et le sérialiser sur le
+disque, alors que l'app ne doit que lire un trie sérialisé pour comparer des
+mots via une distance de Damerau-Levenshtein. Autrement dit, l'app charge le
+trie en lecture seule, ce qui peut être utilisé à des fins d'optimisation.
+Typiquement, nous utilisons le syscall `mmap` lorsqu'on doit charger une grosse
+chaîne de caractères dans un fichier dans l'application, alors que cette
+approche est moins pratique lorsqu'on construit un trie à partir d'une liste
+de mots. Concrètement, cela signifie que l'on peut choisir si on veut créer
+un trie dynamique, stockant le contenu des bords dans une string modifiable,
+ou si on veut créer un trie statique, lisant le contenu des bords dans une
+région "mmappée" de la mémoire, et ce grâce au paramètre de template du trie.
+Le code est donc quasiment le même entre le trie statique et dynamique, les
+quelques différences étant gérées grâce à un "type trait" et des classes de
+stockage à part (une pour chaque type). Cela implique que tout ce qui fonctionne
+sur un trie statique, fonctionne aussi sur un trie dynamique et nous permet donc
+de proposer à l'application de se retrancher sur un trie dynamique si l'appel
+système à `mmap` échoue (ce qui peut arriver). Cela simplifie aussi beaucoup
+la sérialisation et déserialisation puisqu'elles correspondent au même code.
 
+En somme, il n'y a qu'un seul type de trie, le stockage des bords peut être
+dynamique ou statique, et le trie s'adapter grâce à un peu de métaprogrammation.
+Ce système nous offre une certaine flexibilité agréable sans perte en performances.
 
 > Listez l’ensemble des tests effectués sur votre programme (en plus des units tests)
 
