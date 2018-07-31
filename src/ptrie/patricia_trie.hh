@@ -38,6 +38,8 @@ namespace ptrie {
     };
     using results_t = std::vector<search_result_t>;
 
+    static self_t deserialize(const std::string& path);
+
     PatriciaTrie(const edge_storage_t& storage);
     ~PatriciaTrie();
 

@@ -3,11 +3,56 @@
 #include <algorithm>
 #include <fstream>
 #include <numeric>
+#include <istream>
 #include <ostream>
 #include <queue>
 #include <stack>
 
 namespace ptrie {
+
+  template <typename ESP>
+  typename PatriciaTrie<ESP>::self_t
+  PatriciaTrie<ESP>::deserialize(const std::string& path) {
+    std::ifstream in(path);
+
+    auto read_val = [&in](auto target) {
+      in.read(reinterpret_cast<char *>(target), sizeof(*target));
+    };
+
+    index_t sl;
+    read_val(&sl);
+    edge_storage_t storage = edge_storage_t::deserialize(path, sl, sizeof(sl));
+    in.seekg(sl + sizeof(sl));
+
+    self_t ptrie{storage};
+    std::queue<std::pair<node_ptr_t, char_t>> queue;
+
+    auto read_children = [&in, &queue, &read_val](node_ptr_t node) {
+      typename children_t::size_type n;
+      read_val(&n);
+      for (typename children_t::size_type i = 0; i < n; i++) {
+        char_t c;
+        read_val(&c);
+        queue.push(std::make_pair(node, c));
+      }
+    };
+
+    read_children(ptrie.root_);
+    index_t len;
+    index_t off;
+    freq_t freq;
+    while (not queue.empty()) {
+      read_val(&len);
+      read_val(&off);
+      read_val(&freq);
+      node_ptr_t cur = ptrie.new_node(edge_t(ptrie.estore_, off, len), freq);
+      auto parent_attach = queue.front();
+      queue.pop();
+      parent_attach.first->children_get()[parent_attach.second] = cur;
+      read_children(cur);
+    }
+    return ptrie;
+  }
 
   template <typename ESP>
   PatriciaTrie<ESP>::PatriciaTrie(const edge_storage_t& storage)
@@ -221,7 +266,11 @@ namespace ptrie {
 
     estore_.serialize(out);
     std::queue<node_ptr_t> queue;
-    queue.push(root_);
+    dump_val(root_->children_get().size());
+    for (auto child : root_->children_get()) {
+      queue.push(child.second);
+      dump_val(child.first);
+    }
     while (not queue.empty()) {
       auto current = queue.front();
       queue.pop();

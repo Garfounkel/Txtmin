@@ -27,7 +27,7 @@ int main(int argc, char *argv[]) {
         << std::endl;
     exit(64);
   }
-
+/*
   auto in = std::ifstream(argv[1]);
 
   std::cerr << "Building patricia trie... ";
@@ -38,7 +38,8 @@ int main(int argc, char *argv[]) {
   std::cerr << "Serializing... ";
   ptrie.serialize(argv[2]);
   std::cerr << "done." << std::endl;
-
+*/
+  auto ptrie = ptrie::PatriciaTrie<storage_t>::deserialize(argv[1]);
   if (argc == 5 and (argv[3] == std::string("--dot_output"))) {
     auto dot_ostream = std::ofstream(argv[4]);
     ptrie.write_dot(dot_ostream);
