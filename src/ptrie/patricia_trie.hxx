@@ -46,12 +46,6 @@ PatriciaTrie<ESP>::insert(const string_t &word, freq_t freq) {
     auto current = it->second; // Advance one level
     auto &wordpart = current->leading_edge_get();
 
-    if (wordpart.length() == 0) {
-      c++;
-      parent = current;
-      continue;
-    }
-
     // Node has a compressed edge
     // Advance until prefixes are the same
     index_t i = 0;
@@ -65,15 +59,19 @@ PatriciaTrie<ESP>::insert(const string_t &word, freq_t freq) {
     if (wordpart.length() == i) {
       if (c < word.length()) {
         parent = it->second; // Advance one level
+      } else {  // End of wordpart and of word
+        current->freq_set(freq);
       }
     } else {
       auto branch = wordpart.cut(i); // Split current edge at i
 
+      auto freq_inter_node = c < word.length() ? 0 : freq;
       // Create new intermediate node
-      node_ptr_t new_inter_node = new_node(branch.second);
+      node_ptr_t new_inter_node = new_node(branch.second, freq_inter_node);
 
       parent->children_get()[first_char] = new_inter_node;
       new_inter_node->children_get()[branch.first] = current;
+
       parent = new_inter_node;
     }
   }
@@ -132,8 +130,7 @@ void PatriciaTrie<ESP>::search_dist_rec(
     currentRow.push_back(min_dist);
   }
 
-  if (currentRow.back() <= maxDist and node->is_word() and
-      (cursor.offset_get() + 1 >= node->leading_edge_get().length())) {
+  if (currentRow.back() <= maxDist and cursor.is_word()) {
     auto res = search_result_t{node_word, currentRow.back(), node->freq_get()};
     results.push_back(res);
   }

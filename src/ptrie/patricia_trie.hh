@@ -95,6 +95,14 @@ namespace ptrie {
         return node_->leading_edge_get()[offset_];
       }
 
+      bool is_word() {
+        if (!node_->is_word())
+          return false;
+        auto edge_len = node_->leading_edge_get().length();
+        return (current_char_is_leading_ and edge_len == 0)
+            or (!current_char_is_leading_ and offset_ + 1 >= edge_len);
+      }
+
       std::vector<NodeCursor> next_children_get();
 
     private:
