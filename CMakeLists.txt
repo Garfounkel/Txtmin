@@ -6,7 +6,7 @@ include_directories(src)
 set(CMAKE_CXX_FLAGS "-Wall -Wextra -pedantic -std=c++17 -g")
 
 set(SRC
-  src/trie.cc
+  # src/trie.cc
 )
 
 add_executable(TextMiningCompiler src/compiler.cc ${SRC})
