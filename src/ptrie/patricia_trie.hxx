@@ -163,6 +163,7 @@ void PatriciaTrie<ESP>::search_dist_rec(
   auto &node = cursor.node_get();
   index_t columns = word.length() + 1;
   std::vector<index_t> currentRow = {previousRow[0] + 1};
+  index_t i = node_word.length();
 
   for (index_t col = 1; col < columns; col++) {
     auto dist = (word[col - 1] != letter) ? 1 : 0;
@@ -173,8 +174,8 @@ void PatriciaTrie<ESP>::search_dist_rec(
 
     auto min_dist = std::min({insertionCost, supressionCost, subCost});
 
-    if (col > 1 and transpoRow.size() and
-        word[col - 1] == node_word[col - 2] and word[col - 2] == node_word[col - 1]) {
+    if (i > 1 and col > 1 and transpoRow.size() and
+        word[col - 2] == node_word[i - 1] and word[col - 1] == node_word[i - 2]) {
       min_dist = std::min(min_dist, transpoRow[col - 2] + dist);
     }
     currentRow.push_back(min_dist);
