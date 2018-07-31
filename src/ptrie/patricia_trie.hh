@@ -45,12 +45,13 @@ namespace ptrie {
     unsigned &node_number_get() { return node_number_; }
     results_t search_dist(const string_t &word, const index_t maxDist);
 
-    void serialize(const std::string& path) const;
+    void serialize(const std::string &path) const;
 
   private:
     void search_dist_rec(NodeCursor &cursor, char_t letter, string_t node_word,
                          const string_t &word, std::vector<index_t> previousRow,
-                         results_t &results, const index_t maxDist);
+                         std::vector<index_t> transpoRow, results_t &results,
+                         const index_t maxDist);
 
     node_ptr_t new_node(const string_t &leading = "", freq_t freq = 0);
     node_ptr_t new_node(const edge_t &leading_edge, freq_t freq = 0);
@@ -63,7 +64,7 @@ namespace ptrie {
       bool is_word() const { return freq_ > 0; }
       void freq_set(const freq_t value) { freq_ = value; }
       children_t &children_get() { return children_; }
-      edge_t &leading_edge_get() { return leading_edge_; }
+      edge_t& leading_edge_get() { return leading_edge_; }
       freq_t freq_get() const { return freq_; }
 
     private:
@@ -79,8 +80,8 @@ namespace ptrie {
             current_char_is_leading_(true) {}
 
       node_ptr_t &node_get() { return node_; }
-      index_t &offset_get() { return offset_; }
-      const char_t &current_char_get() const {
+      index_t& offset_get() { return offset_; }
+      char_t current_char_get() const {
         if (current_char_is_leading_)
           return leading_char_;
         return node_->leading_edge_get()[offset_];

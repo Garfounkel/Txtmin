@@ -17,11 +17,14 @@ int main(int argc, char *argv[]) {
 
   auto in = std::ifstream(argv[1]);
 
+  std::cerr << "Building patricia trie... ";
   auto ptrie = ptrie::PatriciaTrie<storage_t>::read_words_file(in);
+  std::cerr << "done." << std::endl;
   std::cerr << "Node number: " << ptrie.node_number_get() << std::endl;
 
+  std::cerr << "Serializing... ";
   ptrie.serialize(argv[2]);
-  std::cerr << "Serialization done." << std::endl;
+  std::cerr << "done." << std::endl;
 
   if (argc == 5 and (argv[3] == std::string("--dot_output"))) {
     auto dot_ostream = std::ofstream(argv[4]);

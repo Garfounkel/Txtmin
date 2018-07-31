@@ -12,8 +12,6 @@ Trie::Trie(std::istream &file) : root_(std::make_shared<node_t>()) {
 
     insert(word, freq);
   }
-  std::cout << "Node size: " << sizeof(Node) << std::endl;
-  std::cout << "Nb_node: " << nb_node_ << std::endl;
 }
 
 void Trie::insert(const std::string &word, const unsigned freq) {
