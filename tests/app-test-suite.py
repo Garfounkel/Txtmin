@@ -21,26 +21,6 @@ def usage():
     exit(64)
 
 
-def test_cat_echo():
-    print(f'--- {col.OKBLUE}Testing cat and echo as input{col.ENDC} ---')
-    tmp_file = 'tmp.in'
-    with open(tmp_file, 'w') as file:
-        file.write("approx 0 test")
-    ref_process = sp.run(['cat', tmp_file, '|', f'./{ref}', ref_bin],
-                         stdout=sp.PIPE, stderr=sp.DEVNULL)
-    mine_process = sp.run(['cat', tmp_file, '|', f'./{mine}', mine_bin],
-                          stdout=sp.PIPE, stderr=sp.DEVNULL)
-    print_test('cat ' + tmp_file + ' | ./App bin', ref_process, mine_process)
-    os.remove(tmp_file)
-
-    echo = '"approx 0 test"'
-    ref_process = sp.run(['echo', echo, '|', f'./{ref}', ref_bin],
-                         stdout=sp.PIPE, stderr=sp.DEVNULL)
-    mine_process = sp.run(['echo', echo, '|', f'./{mine}', mine_bin],
-                          stdout=sp.PIPE, stderr=sp.DEVNULL)
-    print_test('echo ' + echo + ' | ./App bin', ref_process, mine_process)
-
-
 def print_test(testname, ref_process, mine_process):
     ref_code = ref_process.returncode
     mine_code = mine_process.returncode
@@ -77,8 +57,6 @@ if __name__ == '__main__':
     ref_bin = sys.argv[3]
     mine = sys.argv[4]
     mine_bin = sys.argv[5]
-
-    test_cat_echo()
 
     print(f'----------- {col.OKBLUE}Tests stdin{col.ENDC} -------------')
     for filename in glob.glob(os.path.join(testspath, '*.in')):
