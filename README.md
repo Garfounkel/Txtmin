@@ -41,6 +41,15 @@ approx 1 coupedumonde
 [{"word":"coupedumonde","freq":3002,"distance":0},{"word":"croupedumonde","freq":462,"distance":1}]
 ```
 
+## Test-suite
+```
+mkdir _build && cd _build && cmake .. && make
+./TextMiningCompiler words.txt dict.bin
+cd ../tests
+python app-test-suite.py App/ [REF_APP] [REF_BIN] ../_build/TextMiningApp ../_build/dict.bin
+```
+
+
 ## FAQ (in French)
 > Décrivez les choix de design de votre programme:
 
@@ -69,8 +78,9 @@ système à `mmap` échoue (ce qui peut arriver). Cela simplifie aussi beaucoup
 la sérialisation et déserialisation puisqu'elles correspondent au même code.
 
 En somme, il n'y a qu'un seul type de trie, le stockage des bords peut être
-dynamique ou statique, et le trie s'adapter grâce à un peu de métaprogrammation.
+dynamique ou statique, et le trie peut s'adapter grâce à un peu de métaprogrammation.
 Ce système nous offre une certaine flexibilité agréable sans perte en performances.
+
 
 > Listez l’ensemble des tests effectués sur votre programme (en plus des units tests)
 
