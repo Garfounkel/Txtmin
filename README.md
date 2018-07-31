@@ -52,7 +52,7 @@ approx 1 coupedumonde
 
 > Avez-vous détecté des cas où la correction par distance ne fonctionnait pas (même avec une distance élevée) ?
 
-Dans certains cas, les poids que nous utilisons pour la distance de Damerau-Levenshtein ne sont pas les mieux adaptés, en effet, la transposition de deux lettres adjacentes est plus courante
+Dans certains cas, les poids que nous utilisons pour la distance de Damerau-Levenshtein ne sont pas les mieux adaptés, en effet, la transposition de deux lettres adjacentes est plus courante que la suppression. Par example le mot `tets` veut probablement dire `test` et pas `tes`.
 
 > Quelle est la structure de données que vous avez implémentée dans votre projet, pourquoi ?
 
@@ -68,4 +68,4 @@ Nous pourrions compresser beaucoup plus notre arbre lors de la sérialisation. E
 
 > Que manque-t-il à votre correcteur orthographique pour qu’il soit à l’état de l’art ?
 
-Nous ne prenons pas en compte les fautes de syntax et de grammaire, en effet nous pourrions prendre une phrase en entrèe et faire une analyse syntaxique pour en détecter les fautes d'accord ainsi que dans l'ordre des mots. Nous ne prenons pas non plus en compte la position des charactères sur le clavier. Or l'utilisateur étant humain, il se pourrait qu'il écrive le mot `qyuq` en voulant écrire le mot `suis` (en ayant les mains décallées d'une touche sur un clavier azerty par exemple).
+Nous ne prenons pas en compte les fautes de syntaxe et de grammaire, en effet nous pourrions prendre une phrase en entrèe et faire une analyse syntaxique pour en détecter les fautes d'accord ainsi que dans l'ordre des mots. Nous ne prenons pas non plus en compte la position des charactères sur le clavier. Or l'utilisateur étant humain, il se pourrait qu'il écrive le mot `qyuq` en voulant écrire le mot `suis` (en ayant les mains décallées d'une touche sur un clavier azerty par exemple).
