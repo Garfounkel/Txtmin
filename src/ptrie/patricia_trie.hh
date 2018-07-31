@@ -43,18 +43,22 @@ namespace ptrie {
     PatriciaTrie(const edge_storage_t& storage);
     ~PatriciaTrie();
 
+    // Copies are not allowed for performance and memory reasons
+    PatriciaTrie(const PatriciaTrie& ptrie) = delete;
+    PatriciaTrie& operator=(const PatriciaTrie& ptrie) = delete;
+
     // Move constructor
     PatriciaTrie(PatriciaTrie&& ptrie)
       : estore_(ptrie.estore_), root_(ptrie.root_), node_number_(ptrie.node_number_) {
         ptrie.root_ = nullptr;
+        ptrie.estore_ = nullptr;
       }
     // Assignment move operator
     PatriciaTrie& operator=(PatriciaTrie&& ptrie)
     {
-      estore_ = ptrie.estore_;
-      root_ = ptrie.root_;
-      node_number_ = ptrie.node_number_;
-      ptrie.root_ = nullptr;
+      std::swap(estore_, ptrie.estore_);
+      std::swap(root_, ptrie.root_);
+      std::swap(node_number_, ptrie.node_number_);
       return *this;
     }
 
@@ -129,7 +133,7 @@ namespace ptrie {
       bool current_char_is_leading_;
     };
 
-    edge_storage_t estore_;
+    edge_storage_t* estore_;
     node_ptr_t root_;
     unsigned node_number_ = 0;
   };

@@ -56,22 +56,26 @@ namespace ptrie {
 
   template <typename ESP>
   PatriciaTrie<ESP>::PatriciaTrie(const edge_storage_t& storage)
-    : estore_(storage), root_(new Node(estore_.empty_edge(), 0))
+    : estore_(new edge_storage_t(storage)),
+      root_(new Node(estore_->empty_edge(), 0))
   {}
 
   template <typename ESP> PatriciaTrie<ESP>::~PatriciaTrie() {
-    if (!root_) {
-      return;
+    if (estore_)
+      delete estore_;
+    if (root_) {
+      std::queue<node_ptr_t> queue;
+      queue.push(root_);
+      while (not queue.empty()) {
+        auto current = queue.front();
+        queue.pop();
+        for (auto child : current->children_get())
+          queue.push(child.second);
+        delete current;
+      }
     }
-    std::queue<node_ptr_t> queue;
-    queue.push(root_);
-    while (not queue.empty()) {
-      auto current = queue.front();
-      queue.pop();
-      for (auto child : current->children_get())
-        queue.push(child.second);
-      delete current;
-    }
+    root_ = nullptr;
+    estore_ = nullptr;
   }
 
 
@@ -199,7 +203,7 @@ template <typename ESP>
 typename PatriciaTrie<ESP>::node_ptr_t
 PatriciaTrie<ESP>::new_node(const string_t &leading_chars, freq_t freq) {
   node_number_++;
-  return new node_t(estore_.new_edge(leading_chars), freq);
+  return new node_t(estore_->new_edge(leading_chars), freq);
 }
 
 template <typename ESP>
@@ -274,7 +278,7 @@ template <typename ESP> void PatriciaTrie<ESP>::write_dot(std::ostream &file) {
       out.write(reinterpret_cast<char *>(&val), sizeof(val));
     };
 
-    estore_.serialize(out);
+    estore_->serialize(out);
     std::queue<node_ptr_t> queue;
     dump_val(root_->children_get().size());
     for (auto child : root_->children_get()) {

@@ -39,10 +39,6 @@ int main(int argc, char *argv[]) {
   ptrie.serialize(argv[2]);
   std::cerr << "done." << std::endl;
 
-  std::cerr << "Deserializing...";
-  ptrie = ptrie::PatriciaTrie<storage_t>::deserialize(argv[2]);
-  std::cerr << "done." << std::endl;
-
   if (argc == 5 and (argv[3] == std::string("--dot_output"))) {
     std::cerr << "Writing dot file...";
     auto dot_ostream = std::ofstream(argv[4]);

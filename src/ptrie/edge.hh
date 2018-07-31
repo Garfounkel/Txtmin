@@ -12,7 +12,7 @@ namespace ptrie {
     using branch_t = std::pair<char_t, self_t>;
 
   public:
-    EdgeStorage(const storage_t& data, index_t off, index_t len)
+    EdgeStorage(const storage_t* data, index_t off, index_t len)
       : offset_(off), length_(len), data_(data)
     {}
 
@@ -21,13 +21,13 @@ namespace ptrie {
     char_t operator[](const index_t at) const {
       if (at >= length_)
         return '\0';
-      return data_[offset_ + at];
+      return (*data_)[offset_ + at];
     }
-    string_t get_as_string() const { return data_.substr(offset_, length_); }
+    string_t get_as_string() const { return (*data_).substr(offset_, length_); }
 
     branch_t cut(index_t at)
     {
-      char_t ch = data_[offset_ + at];
+      char_t ch = (*data_)[offset_ + at];
       auto first_half = offset_;
       offset_ = offset_ + at + 1;
       length_ = length_ - at - 1;
@@ -38,7 +38,7 @@ namespace ptrie {
   private:
     index_t offset_;
     index_t length_;
-    const storage_t& data_;
+    const storage_t* data_;
   };
 
 }

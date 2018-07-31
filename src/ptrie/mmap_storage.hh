@@ -44,7 +44,7 @@ namespace ptrie {
       len_ = 0;
     }
 
-    edge_t empty_edge() const { return edge_t(*this, 0, 0); }
+    edge_t empty_edge() const { return edge_t(this, 0, 0); }
 
     // remove me
     //edge_t new_edge(const string_t& content) { assert(false); return edge_t(*this, 0, 0); }

@@ -29,7 +29,7 @@ namespace ptrie {
       return store;
     }
 
-    edge_t empty_edge() const { return edge_t(*this, 0, 0); }
+    edge_t empty_edge() const { return edge_t(this, 0, 0); }
 
     edge_t new_edge(const string_t &content)
     {
@@ -38,7 +38,7 @@ namespace ptrie {
       auto off = data_.length();
       auto len = content.length();
       data_.append(content);
-      return edge_t(*this, off, len);
+      return edge_t(this, off, len);
     }
 
     char operator[](const index_t at) const { return data_[at]; }
