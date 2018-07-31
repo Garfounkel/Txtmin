@@ -43,6 +43,21 @@ namespace ptrie {
     PatriciaTrie(const edge_storage_t& storage);
     ~PatriciaTrie();
 
+    // Move constructor
+    PatriciaTrie(PatriciaTrie&& ptrie)
+      : estore_(ptrie.estore_), root_(ptrie.root_), node_number_(ptrie.node_number_) {
+        ptrie.root_ = nullptr;
+      }
+    // Assignment move operator
+    PatriciaTrie& operator=(PatriciaTrie&& ptrie)
+    {
+      estore_ = ptrie.estore_;
+      root_ = ptrie.root_;
+      node_number_ = ptrie.node_number_;
+      ptrie.root_ = nullptr;
+      return *this;
+    }
+
     // Member function void insert(string, freq) is only available with non readonly storage
     template <class S = edge_storage_t>
     typename std::enable_if<

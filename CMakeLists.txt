@@ -3,7 +3,7 @@ project (TMLN)
 
 include_directories(src)
 
-set(CMAKE_CXX_FLAGS "-Wall -Wextra -pedantic -std=c++17 -O3")
+set(CMAKE_CXX_FLAGS "-Wall -Wextra -pedantic -std=c++17 -g")
 
 set(SRC
   # src/trie.cc

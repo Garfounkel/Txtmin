@@ -60,6 +60,9 @@ namespace ptrie {
   {}
 
   template <typename ESP> PatriciaTrie<ESP>::~PatriciaTrie() {
+    if (!root_) {
+      return;
+    }
     std::queue<node_ptr_t> queue;
     queue.push(root_);
     while (not queue.empty()) {
