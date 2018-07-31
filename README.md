@@ -42,7 +42,7 @@ approx 1 coupedumonde
 ```
 
 ## FAQ (in French)
-> Decrivez les choix de design de votre programme:
+> Décrivez les choix de design de votre programme:
 
 Nous utilisons un Patricia Trie pour stocker les mots et leurs fréquences. Le
 Patricia Trie est plus performant qu'un trie et offre les mêmes avantages (cf
@@ -78,11 +78,11 @@ Ce système nous offre une certaine flexibilité agréable sans perte en perform
 
 > Avez-vous détecté des cas où la correction par distance ne fonctionnait pas (même avec une distance élevée) ?
 
-Dans certains cas, les poids que nous utilisons pour la distance de Damerau-Levenshtein ne sont pas les mieux adaptés, en effet, la transposition de deux lettres adjacentes est plus courante
+Dans certains cas, les poids que nous utilisons pour la distance de Damerau-Levenshtein ne sont pas les mieux adaptés, en effet, la transposition de deux lettres adjacentes est plus courante que la suppression. Par example le mot `tets` veut probablement dire `test` et pas `tes`.
 
 > Quelle est la structure de données que vous avez implémentée dans votre projet, pourquoi ?
 
-
+Nous avons d'abord implémenté un simple Trie qui permet une recherche très rapide dans du texte étant donné que notre but permier était d'obtenir des bonnes performances sur la correction orthographique. Nous nous sommes assez vite rendu compte que le Trie nous ne permettrait pas de répondre à la contrainte de mémoire qui était de faire tourner nous programme sur une machine avec 512Mb de RAM. Nous avons donc implémentés un Patricia Trie qui a pour but de réduire considèrablement la taille de notre arbre en compressant les branches dont chaque noeuds possède un seul fils.
 
 > Proposez un réglage automatique de la distance pour un programme qui prend juste une chaîne de caractères en entrée, donner le processus d’évaluation ainsi que les résultats.
 
@@ -94,4 +94,4 @@ Nous pourrions compresser beaucoup plus notre arbre lors de la sérialisation. E
 
 > Que manque-t-il à votre correcteur orthographique pour qu’il soit à l’état de l’art ?
 
-Nous ne prenons pas en compte les fautes de syntax et de grammaire, en effet nous pourrions prendre une phrase en entrèe et faire une analyse syntaxique pour en détecter les fautes d'accord ainsi que dans l'ordre des mots. Nous ne prenons pas non plus en compte la position des charactères sur le clavier. Or l'utilisateur étant humain, il se pourrait qu'il écrive le mot `qyuq` en voulant écrire le mot `suis` (en ayant les mains décallées d'une touche sur un clavier azerty par exemple).
+Nous ne prenons pas en compte les fautes de syntaxe et de grammaire, en effet nous pourrions prendre une phrase en entrèe et faire une analyse syntaxique pour en détecter les fautes d'accord ainsi que dans l'ordre des mots. Nous ne prenons pas non plus en compte la position des charactères sur le clavier. Or l'utilisateur étant humain, il se pourrait qu'il écrive le mot `qyuq` en voulant écrire le mot `suis` (en ayant les mains décallées d'une touche sur un clavier azerty par exemple).
