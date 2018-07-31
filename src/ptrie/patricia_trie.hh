@@ -2,11 +2,12 @@
 
 #include <cstdint>
 #include <istream>
-#include <map>
 #include <memory>
 #include <vector>
+#include <type_traits>
 
 #include "vector_map.hh"
+#include "storage_traits.hh"
 
 namespace ptrie {
 
@@ -14,13 +15,17 @@ namespace ptrie {
     class Node;
     class NodeCursor;
 
+    using self_t = PatriciaTrie;
     using edge_storage_t = EdgeStoragePolicy;
+
+  public:
     using char_t = typename edge_storage_t::char_t;
     using string_t = typename edge_storage_t::string_t;
     using edge_t = typename edge_storage_t::edge_t;
     using index_t = typename edge_storage_t::index_t;
-
     using freq_t = unsigned;
+
+  private:
     using node_t = Node;
     using node_ptr_t = node_t *;
     using children_t = VectorMap<char_t, node_ptr_t>;
@@ -33,14 +38,17 @@ namespace ptrie {
     };
     using results_t = std::vector<search_result_t>;
 
-  public:
-    static PatriciaTrie read_words_file(std::istream &file);
-
-    PatriciaTrie();
+    PatriciaTrie(const edge_storage_t& storage);
     ~PatriciaTrie();
 
-    // std::enable_if  trait read-only of edge_storage_t is false
-    void insert(const string_t &word, const freq_t freq);
+    // Member function void insert(string, freq) is only available with non readonly storage
+    template <class S = edge_storage_t>
+    typename std::enable_if<
+      std::is_same<S, edge_storage_t>::value
+      and not StorageTraits<S>::read_only,
+    void>::type
+    insert(const string_t &word, const freq_t freq);
+
     void write_dot(std::ostream &file);
     unsigned &node_number_get() { return node_number_; }
     results_t search_dist(const string_t &word, const index_t maxDist);
@@ -96,8 +104,8 @@ namespace ptrie {
       bool current_char_is_leading_;
     };
 
-    node_ptr_t root_;
     edge_storage_t estore_;
+    node_ptr_t root_;
     unsigned node_number_ = 0;
   };
 

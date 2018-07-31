@@ -5,9 +5,20 @@
 #include "ptrie/string_storage.hh"
 
 using storage_t = ptrie::StringStorage;
+using ptrie_t = ptrie::PatriciaTrie<storage_t>;
 
-void print_results(std::ostream &out,
-                   const ptrie::PatriciaTrie<storage_t>::results_t &results) {
+ptrie_t ptrie_from_words_file(std::istream &words) {
+    ptrie_t ptrie = ptrie_t(storage_t());
+    while (words.good()) {
+      typename ptrie_t::string_t word;
+      typename ptrie_t::freq_t freq;
+      words >> word >> freq;
+      ptrie.insert(word, freq);
+    }
+    return ptrie;
+}
+
+void print_results(std::ostream &out, const ptrie_t::results_t &results) {
   out << "[";
   for (auto res = std::begin(results); res < std::end(results); res++) {
     out << "{"
@@ -24,7 +35,7 @@ void print_results(std::ostream &out,
   out << "]" << std::endl;
 }
 
-void process_stream(std::istream &in, ptrie::PatriciaTrie<storage_t> &ptrie) {
+void process_stream(std::istream &in, ptrie_t& ptrie) {
   while (in.good()) {
     std::string approx;
     std::string word;
@@ -59,7 +70,7 @@ int main(int argc, char *argv[]) {
 
   auto istream = std::ifstream(argv[1]);
 
-  auto ptrie = ptrie::PatriciaTrie<storage_t>::read_words_file(istream);
+  auto ptrie = ptrie_from_words_file(istream);
   process_stream(std::cin, ptrie);
 
   return 0;

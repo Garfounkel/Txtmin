@@ -3,8 +3,21 @@
 
 #include "ptrie/patricia_trie.hh"
 #include "ptrie/string_storage.hh"
+#include "ptrie/mmap_storage.hh"
 
 using storage_t = ptrie::StringStorage;
+using ptrie_t = ptrie::PatriciaTrie<storage_t>;
+
+ptrie_t ptrie_from_words_file(std::istream &words) {
+    ptrie_t ptrie = ptrie_t(storage_t());
+    while (words.good()) {
+      ptrie_t::string_t word;
+      ptrie_t::freq_t freq;
+      words >> word >> freq;
+      ptrie.insert(word, freq);
+    }
+    return ptrie;
+}
 
 int main(int argc, char *argv[]) {
   if (argc != 3 and (argc != 5 or argv[3] != std::string("--dot_output"))) {
@@ -18,7 +31,7 @@ int main(int argc, char *argv[]) {
   auto in = std::ifstream(argv[1]);
 
   std::cerr << "Building patricia trie... ";
-  auto ptrie = ptrie::PatriciaTrie<storage_t>::read_words_file(in);
+  auto ptrie = ptrie_from_words_file(in);
   std::cerr << "done." << std::endl;
   std::cerr << "Node number: " << ptrie.node_number_get() << std::endl;
 

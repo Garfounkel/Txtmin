@@ -10,19 +10,9 @@
 namespace ptrie {
 
   template <typename ESP>
-  PatriciaTrie<ESP> PatriciaTrie<ESP>::read_words_file(std::istream &words) {
-    PatriciaTrie ptrie;
-    while (words.good()) {
-      string_t word;
-      freq_t freq;
-      words >> word >> freq;
-      ptrie.insert(word, freq);
-    }
-    return ptrie;
-  }
-
-  template <typename ESP>
-  PatriciaTrie<ESP>::PatriciaTrie() : root_(new Node(estore_.new_edge(""), 0)) {}
+  PatriciaTrie<ESP>::PatriciaTrie(const edge_storage_t& storage)
+    : estore_(storage), root_(new Node(estore_.empty_edge(), 0))
+  {}
 
   template <typename ESP> PatriciaTrie<ESP>::~PatriciaTrie() {
     std::queue<node_ptr_t> queue;
@@ -37,7 +27,12 @@ namespace ptrie {
   }
 
   template <typename ESP>
-  void PatriciaTrie<ESP>::insert(const string_t &word, freq_t freq) {
+  template <typename S>
+  typename std::enable_if<
+    std::is_same<S, typename PatriciaTrie<ESP>::edge_storage_t>::value
+    and not StorageTraits<S>::read_only,
+  void>::type
+  PatriciaTrie<ESP>::insert(const string_t &word, freq_t freq) {
     auto parent = root_;
 
     for (unsigned c = 0; c < word.length();) {
@@ -224,7 +219,7 @@ namespace ptrie {
       out.write(reinterpret_cast<char *>(&val), sizeof(val));
     };
 
-    estore_.dump(out);
+    estore_.serialize(out);
     std::queue<node_ptr_t> queue;
     queue.push(root_);
     while (not queue.empty()) {
