@@ -93,7 +93,7 @@ Dans certains cas, les poids que nous utilisons pour la distance de Damerau-Leve
 
 > Quelle est la structure de données que vous avez implémentée dans votre projet, pourquoi ?
 
-Nous avons d'abord implémenté un simple Trie qui permet une recherche très rapide dans du texte étant donné que notre but permier était d'obtenir des bonnes performances sur la correction orthographique. Nous nous sommes assez vite rendu compte que le Trie nous ne permettrait pas de répondre à la contrainte de mémoire qui était de faire tourner nous programme sur une machine avec 512Mb de RAM. Nous avons donc implémentés un Patricia Trie qui a pour but de réduire considèrablement la taille de notre arbre en compressant les branches dont chaque noeuds possède un seul fils.
+Nous avons d'abord implémenté un simple Trie qui permet une recherche très rapide dans du texte étant donné que notre but premier était d'obtenir des bonnes performances sur la correction orthographique. Nous nous sommes assez vite rendu compte que le Trie nous ne permettrait pas de répondre à la contrainte de mémoire qui était de faire tourner nous programme sur une machine avec 512Mb de RAM. Nous avons donc implémentés un Patricia Trie qui a pour but de réduire considèrablement la taille de notre arbre en compressant les branches dont chaque noeuds possède un seul fils.
 
 > Proposez un réglage automatique de la distance pour un programme qui prend juste une chaîne de caractères en entrée, donner le processus d’évaluation ainsi que les résultats.
 
